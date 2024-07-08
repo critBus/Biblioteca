@@ -1,0 +1,10 @@
+{% extends "admin/auth/user/add_form.html" %}
+{% load i18n %}
+
+{% block form_top %}
+  {% if not is_popup %}
+    <p>Primero, ingrese un nombre de usuario y contraseña. Luego, podrá editar más opciones de usuario.</p>
+  {% else %}
+    <p>Introduzca un nombre de usuario y contraseña.</p>
+  {% endif %}
+{% endblock %}
