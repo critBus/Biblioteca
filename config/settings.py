@@ -216,7 +216,7 @@ JAZZMIN_SETTINGS = {
     #     "nomina.DiaFeriado": "fas fa-gifts",
     # },
     # Icons that are used when one is not manually specified
-    "default_icon_parents": "fas fa-chevron-circle-right",
+    # "default_icon_parents": "fas fa-chevron-circle-right",
 }
 JAZZMIN_UI_TWEAKS = {
     "theme": "default",
