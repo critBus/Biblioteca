@@ -31,6 +31,9 @@ def length_validation_11(texto):
             f"Tiene que tener exactamente {cantidad_caracteres} caracteres "
         )
 
+NOMBRE_ROL_TRABAJADOR="TRABAJADOR"
+NOMBRE_ROL_SUSCRIPTOR="SUSCRIPTOR"
+NOMBRE_ROL_ADMINISTRADOR="ADMINISTRADOR"
 
 class Libro(models.Model):
     class Meta:

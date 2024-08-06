@@ -1,0 +1,8 @@
+{% extends 'admin/login.html' %}
+
+{% block content %}
+  {{ block.super }}
+  <div class="form-row">
+    <a href="{% url 'register' %}">Registrarse</a>
+  </div>
+{% endblock %}
