@@ -19,16 +19,16 @@ def crear_roles_django_default():
     )
     crear_rol(
         lista_modelos=[
-            Libro,Revista,MaterialAudiovisual,Concurso,MuestrasMes,LibrosDelMes,Prestamo,Lecturade_libro
+            Libro,Revista,MaterialAudiovisual,Concurso,MuestrasMes,LibrosDelMes,Prestamo,Lecturade_libro,Mobiliario
         ],
         lista_modelos_solo_update=[],
         lista_modelos_solo_create=[],
-        lista_modelos_solo_view=[],
+        lista_modelos_solo_view=[Suscriptor,Asistencia,],
         nombre_rol=NOMBRE_ROL_TRABAJADOR,
     )
     crear_rol(
         lista_modelos=[
-            Libro,Revista,MaterialAudiovisual,Concurso,MuestrasMes,LibrosDelMes,Prestamo,Lecturade_libro,
+            Libro,Revista,MaterialAudiovisual,Concurso,MuestrasMes,LibrosDelMes,Prestamo,Lecturade_libro,Inventario,Mobiliario,Suscriptor,Trabajador,Asistencia,
             ReportRequest,
             ReportDefinition,
             User,

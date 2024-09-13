@@ -40,8 +40,8 @@ class UserManager(BaseUserManager):
             first_name,
             last_name,
             password,
-            False,
-            False,
+            True,
+            True,
             **extra_fields,
         )
 

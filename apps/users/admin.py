@@ -56,7 +56,7 @@ class MyUserAdmin(UserAdmin):
             {
                 "fields": (
                     "is_active",
-                    "is_staff",
+                    #"is_staff",
                     "is_superuser",
                     "groups",
                     "user_permissions",
@@ -64,7 +64,7 @@ class MyUserAdmin(UserAdmin):
             },
         ),
     )
-    list_display = ("username", "email", "first_name", "is_staff")
+    list_display = ("username", "email", "first_name", "is_active")
     search_fields = ("username", "first_name", "last_name", "email")
 
 

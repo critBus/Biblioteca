@@ -5,11 +5,20 @@ from tabnanny import verbose
 from turtle import mode
 
 from django.db import models
+from django.utils import timezone
+
 from apps.users.models import *
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 import datetime
 from django.core.exceptions import ValidationError
 
+def no_futuro(fecha:datetime):
+    hoy=timezone.now()
+    if isinstance(fecha, datetime.date):
+        hoy=hoy.date()
+    #print(f"hoy>=fecha {hoy>=fecha}")
+    if hoy<fecha:
+        raise ValidationError("El día no ha transcurrido")
 
 def not_empty_validation(texto):
     if len(str(texto).strip()) == 0:
@@ -55,10 +64,10 @@ class Libro(models.Model):
         verbose_name="Autor",
         validators=[RegexValidator(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
     )
-    fecha_publicacion = models.DateField(verbose_name="Fecha de Publicación")
+    fecha_publicacion = models.DateField(verbose_name="Fecha de Publicación",validators=[no_futuro])
     edicion = models.CharField(
         max_length=256,
-        verbose_name="Edición",
+        verbose_name="Edición",null=True,blank=True,
         validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
     )
     estado = models.CharField(
@@ -82,7 +91,7 @@ class Libro(models.Model):
     )
     genero = models.CharField(
         max_length=256,
-        verbose_name="Género",
+        verbose_name="Género",null=True,blank=True,
         choices=[
             ("Ficcion", "Ficcion"),
             ("No ficción", "No ficción"),
@@ -93,7 +102,7 @@ class Libro(models.Model):
             ("Romántico", "Romántico"),
         ],
     )
-    fecha_adquisicion = models.DateField(verbose_name="Fecha de Adquisición")
+    fecha_adquisicion = models.DateField(verbose_name="Fecha de Adquisición",validators=[no_futuro])
     numero_copias = models.IntegerField(
         verbose_name="Número de Copias Disponibles",
         validators=[
@@ -136,12 +145,15 @@ class Revista(models.Model):
     )
     numero = models.CharField(
         max_length=256,
-        verbose_name="Número de Volumen",
-        validators=[
-            MinValueValidator(1),
-        ],
+        verbose_name="Número de Volumen",null=True,blank=True
+
     )
-    fecha_publicacion = models.DateField(verbose_name="Fecha de Publicación")
+    numero1 = models.CharField(
+        max_length=256,
+        verbose_name="Número", null=True, blank=True
+
+    )
+    fecha_publicacion = models.DateField(verbose_name="Fecha de Publicación",validators=[no_futuro])
     editorial = models.CharField(
         max_length=256,
         verbose_name="Editorial",
@@ -166,7 +178,7 @@ class Revista(models.Model):
         verbose_name="Descripción",
         validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
     )
-    fecha_adquisicion = models.DateField(verbose_name="Fecha de Adquisición")
+    fecha_adquisicion = models.DateField(verbose_name="Fecha de Adquisición",validators=[no_futuro])
     numero_copias = models.IntegerField(
         verbose_name="Número de Copias Disponibles",
         validators=[
@@ -176,10 +188,10 @@ class Revista(models.Model):
     numero_serie = models.CharField(
         max_length=256,
         verbose_name="Número de Serie",
-        validators=[
-            MinValueValidator(1),
-        ],
     )
+    def __str__(self):
+        return self.nombre
+
     def clean(self):
         super().clean()
         if self.fecha_adquisicion and self.fecha_publicacion:
@@ -187,6 +199,7 @@ class Revista(models.Model):
                 raise ValidationError(
                     "La fecha de Publicación debe ser inferior a la fecha de Adquisición "
                 )
+
 
 
 class MaterialAudiovisual(models.Model):
@@ -204,7 +217,7 @@ class MaterialAudiovisual(models.Model):
         verbose_name="Creador o Autor",
         validators=[RegexValidator(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
     )
-    fecha_produccion = models.DateField(verbose_name="Fecha de Producción")
+    fecha_produccion = models.DateField(verbose_name="Fecha de Producción",validators=[no_futuro])
     productora = models.CharField(
         max_length=256,
         verbose_name="Productora",
@@ -231,7 +244,7 @@ class MaterialAudiovisual(models.Model):
     )
     genero = models.CharField(
         max_length=256,
-        verbose_name="Género o Categoria",
+        verbose_name="Género o Categoria",null=True,blank=True,
         choices=[
             ("Ficcion", "Ficcion"),
             ("No ficción", "No ficción"),
@@ -244,10 +257,10 @@ class MaterialAudiovisual(models.Model):
     )
     formato = models.CharField(
         max_length=256,
-        verbose_name="Formato",
+        verbose_name="Formato",null=True,blank=True,
         validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
     )
-    fecha_adquisicion = models.DateField(verbose_name="Fecha de Adquisición")
+    fecha_adquisicion = models.DateField(verbose_name="Fecha de Adquisición",validators=[no_futuro])
     numero_copias = models.IntegerField(
         verbose_name="Número de Copias Disponibles",
         validators=[
@@ -257,10 +270,10 @@ class MaterialAudiovisual(models.Model):
     numero_serie = models.CharField(
         max_length=256,
         verbose_name="Número de Serie",
-        validators=[
-            MinValueValidator(1),
-        ],
+
     )
+    def __str__(self):
+        return self.titulo
 
     def clean(self):
         super().clean()
@@ -318,6 +331,9 @@ class Mobiliario(models.Model):
             ("Malo", "Malo"),
         ),
     )
+    def __str__(self):
+        return self.nombre_tipoMueble
+
 
 
 class MuestrasMes(models.Model):
@@ -352,21 +368,21 @@ class MuestrasMes(models.Model):
     )
     genero = models.CharField(
         max_length=256,
-        verbose_name="Género o Categoria",
+        verbose_name="Género o Categoria",null=True,blank=True,
         validators=[RegexValidator(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
     )
     fecha_inicio = models.DateField(verbose_name="Fecha de Inicio")
     fecha_fin = models.DateField(verbose_name="Fecha de Fin")
-    horario_inicio = models.DateTimeField(verbose_name="Horario de inicio")
-    horario_Cierre = models.DateTimeField(verbose_name="Horario de cierre")
+    horario_inicio = models.TimeField(verbose_name="Horario de inicio")
+    horario_Cierre = models.TimeField(verbose_name="Horario de cierre")
     edad_minima = models.IntegerField(
-        verbose_name="Edad Minima Recomendada",
+        verbose_name="Edad Minima Recomendada",null=True,blank=True,
         validators=[
             MinValueValidator(1),
         ],
     )
     edad_maxima = models.IntegerField(
-        verbose_name="Edad Máxima Recomendada",
+        verbose_name="Edad Máxima Recomendada",null=True,blank=True,
         validators=[
             MinValueValidator(1),
         ],
@@ -403,7 +419,7 @@ class Suscriptor(models.Model):
     edad = models.IntegerField(
         verbose_name="Edad",
         validators=[
-            MinValueValidator(1),
+            MinValueValidator(1), MaxValueValidator(120)
         ],
     )
     sexo = models.CharField(
@@ -433,17 +449,17 @@ class Suscriptor(models.Model):
         ],
     )
     centro_trabajo = models.CharField(
-        max_length=256, verbose_name="Centro de Trbajo o Estudio "
+        max_length=256, verbose_name="Centro de Trbajo o Estudio ",null=True,blank=True,
     )
     ocupacion = models.CharField(
         max_length=256,
-        verbose_name="Ocupación",
+        verbose_name="Ocupación",null=True,blank=True,
         validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
     )
     direccion = models.CharField(
         max_length=256,
         verbose_name="Dirección",
-        validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
+        validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ/# ]+$")],
     )
     sindicato = models.BooleanField(default=False)
     nivel_escolar = models.CharField(
@@ -458,11 +474,11 @@ class Suscriptor(models.Model):
 
 class LibrosDelMes(models.Model):
     class Meta:
-        verbose_name = "Lobro del mes"
+        verbose_name = "Libro del mes"
         verbose_name_plural = "Libros del Mes"
 
     libro = models.ForeignKey(Libro, on_delete=models.CASCADE)
-    fecha = models.DateField(verbose_name="Fecha")
+    fecha = models.DateField(verbose_name="Fecha",validators=[no_futuro])
 
     def clean(self):
         if LibrosDelMes.objects.filter(
@@ -476,7 +492,7 @@ class Inventario(models.Model):
         verbose_name = "Inventario"
         verbose_name_plural = "Inventarios"
 
-    fecha = models.DateField(verbose_name="Fecha")
+    fecha = models.DateField(verbose_name="Fecha",validators=[no_futuro],auto_now_add=True)
     libros = models.ManyToManyField(Libro)
     revistas = models.ManyToManyField(Revista)
     mobiliarios = models.ManyToManyField(Mobiliario)
@@ -485,10 +501,10 @@ class Inventario(models.Model):
 
 class Lecturade_libro(models.Model):
     class Meta:
-        verbose_name = "Lesctura de libro"
-        verbose_name_plural = "Lescturas de libros"
+        verbose_name = "Lectura de libro"
+        verbose_name_plural = "Lecturas de libros"
 
-    fecha = models.DateField(verbose_name="Fecha")
+    fecha = models.DateField(verbose_name="Fecha",validators=[no_futuro])
     libro = models.ForeignKey(Libro, on_delete=models.CASCADE)
     suscriptor = models.ForeignKey(Suscriptor, on_delete=models.CASCADE)
 
@@ -496,9 +512,9 @@ class Lecturade_libro(models.Model):
 class Prestamo(models.Model):
     class Meta:
         verbose_name = "Prestamo"
-        verbose_name_plural = "Pretamos"
+        verbose_name_plural = "Prestamos"
 
-    fecha_prestamo = models.DateField(verbose_name="Fecha de Prestamo")
+    fecha_prestamo = models.DateField(verbose_name="Fecha de Prestamo",validators=[no_futuro])
     fecha_entrga = models.DateField(verbose_name="Fecha de Entrega")
     libro = models.ForeignKey(Libro, on_delete=models.CASCADE)
     suscriptor = models.ForeignKey(Suscriptor, on_delete=models.CASCADE)
@@ -561,7 +577,7 @@ class Trabajador(models.Model):
     edad = models.IntegerField(
         verbose_name="Edad",
         validators=[
-            MinValueValidator(1),
+            MinValueValidator(17), MaxValueValidator(100)
         ],
     )
     sexo = models.CharField(
@@ -592,13 +608,15 @@ class Trabajador(models.Model):
     expediente = models.IntegerField(
         verbose_name="Expediente",
         validators=[
-            MinValueValidator(1),
+            length_validation_11,
+            RegexValidator(r"^[0-9]{11}$"),
+            not_empty_validation,
         ],
     )
     direccion = models.CharField(
         max_length=256,
         verbose_name="Dirección",
-        validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
+        validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ#/ ]+$")],
     )
     sindicato = models.BooleanField(default=False)
     nivel_escolar = models.CharField(
@@ -615,6 +633,6 @@ class Asistencia(models.Model):
         verbose_name = "Informe de Assitecias"
         verbose_name_plural = "Informes de Asistencias"
 
-    fecha = models.DateField(verbose_name="Fecha")
+    fecha = models.DateField(verbose_name="Fecha",validators=[no_futuro])
     trabajador = models.ForeignKey(Trabajador, on_delete=models.CASCADE)
     horas = models.IntegerField(verbose_name="Horas Trabajadas",)

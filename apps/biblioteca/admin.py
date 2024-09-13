@@ -1,6 +1,8 @@
 from django.contrib import admin
 
 # Register your models here.
+from django.utils.safestring import mark_safe
+
 from apps.biblioteca.models import *
 from .reportes.para_reportes import *
 
@@ -240,8 +242,7 @@ class Prestamo(admin.ModelAdmin):
         "suscriptor",
     )
     search_fields = (
-        "fecha_prestamo",
-        "fecha_entrga",
+        "fecha_prestamo", "fecha_entrga",
     )
     list_filter = ("suscriptor",)
     ordering = (
@@ -300,15 +301,37 @@ class Trabajador(admin.ModelAdmin):
     ordering = ("nombre", "expediente", "direccion", "Telefono")
     list_display_links = ("nombre", "expediente", "direccion", "Telefono")
 
+def libros_view( obj):
+    nombres = [v.titulo for v in obj.libros.all()]
+    return mark_safe("<br>\n".join(nombres))
+libros_view.short_description="Libros"
+
+def revistas_view( obj):
+    nombres = [v.nombre for v in obj.revistas.all()]
+    return mark_safe("<br>\n".join(nombres))
+revistas_view.short_description="Revista"
+
+def mobiliario_view( obj):
+    nombres = [v.nombre_tipoMueble for v in obj.mobiliarios.all()]
+    return mark_safe("<br>\n".join(nombres))
+mobiliario_view.short_description="Mobiliario"
+
+def audiovisual_view( obj):
+    nombres = [v.titulo for v in obj.materiales_audiovisuales.all()]
+    return mark_safe("<br>\n".join(nombres))
+audiovisual_view.short_description="MaterialAudiovisual"
 
 @admin.register(Inventario)
 class Inventario(admin.ModelAdmin):
-    list_display = ("fecha",)
+
+    readonly_fields = ["fecha"]
+    list_display = ("fecha",libros_view,revistas_view,mobiliario_view,audiovisual_view)
     search_fields = ("fecha",)
-    list_filter = ("fecha",)
+    list_filter = ("fecha","libros__titulo","revistas__nombre","mobiliarios__nombre_tipoMueble","materiales_audiovisuales__titulo")
     ordering = ("fecha",)
     list_display_links = ("fecha",)
     date_hierarchy = "fecha"
+    filter_horizontal = ["libros","revistas","mobiliarios","materiales_audiovisuales"]
 
 
 @admin.register(Asistencia)
