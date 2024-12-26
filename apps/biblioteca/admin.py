@@ -2,12 +2,15 @@ from django.contrib import admin
 
 # Register your models here.
 from django.utils.safestring import mark_safe
+from solo.admin import SingletonModelAdmin
 
 from apps.biblioteca.models import *
 from .reportes.para_reportes import *
 
+
 @admin.register(Libro)
 class LibroAdmin(admin.ModelAdmin):
+    readonly_fields = ["factor_estancia"]
     list_display = (
         "titulo",
         "autor",
@@ -17,8 +20,8 @@ class LibroAdmin(admin.ModelAdmin):
     )
     search_fields = (
         "titulo",
-        "autor",
-        "genero",
+        "numero_serie"
+
     )
     list_filter = (
         "autor",
@@ -40,9 +43,43 @@ class LibroAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "fecha_publicacion"
 
+    @admin.register(LibroInfantil)
+    class LibroInfantilAdmin(admin.ModelAdmin):
+        readonly_fields = ["factor_estancia","peso"]
+        list_display = (
+            "titulo",
+            "autor",
+            "ubicacion",
+            "ilustracioes",
+            "edad_minima",
+            "edad_maxima",
+        )
+        search_fields = (
+            "titulo",
+            "autor",
+        )
+        list_filter = ("autor",)
+        ordering = (
+            "titulo",
+            "autor",
+            "ubicacion",
+            "genero",
+            "numero_copias",
+        )
+        list_display_links = (
+            "titulo",
+            "autor",
+            "ubicacion",
+            "ilustracioes",
+            "edad_minima",
+            "edad_maxima",
+        )
+        date_hierarchy = "fecha_publicacion"
+
 
 @admin.register(Revista)
 class RevistaAdmin(admin.ModelAdmin):
+    readonly_fields = ["factor_estancia", "peso"]
     list_display = (
         "nombre",
         "numero",
@@ -52,8 +89,7 @@ class RevistaAdmin(admin.ModelAdmin):
     )
     search_fields = (
         "nombre",
-        "numero",
-        "editorial",
+        "numero_serie",
     )
     list_filter = (
         "nombre",
@@ -182,6 +218,12 @@ class Suscriptor(admin.ModelAdmin):
     ordering = ("nombre", "ci", "direccion", "Telefono")
     list_display_links = ("nombre", "ci", "direccion", "Telefono")
 
+    # def has_view_permission(self, request, obj=None):
+    #     tiene_permiso= super().has_view_permission(request,obj)
+    #     if tiene_permiso:
+    #         return True
+    #     return obj and obj.user.id==request.user.id
+
 
 @admin.register(LibrosDelMes)
 class LibrosDelMes(admin.ModelAdmin):
@@ -232,17 +274,22 @@ class Concurso(admin.ModelAdmin):
     )
     date_hierarchy = "fecha_inicio"
 
-
+def view_ci(obj):
+    return obj.suscriptor.ci if obj.suscriptor else ""
+view_ci.short_description="CI"
 @admin.register(Prestamo)
 class Prestamo(admin.ModelAdmin):
     list_display = (
-        "fecha_prestamo",
-        "fecha_entrga",
         "libro",
+        "revista",
         "suscriptor",
+        "devolucion",
+        view_ci
     )
     search_fields = (
-        "fecha_prestamo", "fecha_entrga",
+        "fecha_prestamo",
+        "fecha_entrga",
+        "suscriptor__ci"
     )
     list_filter = ("suscriptor",)
     ordering = (
@@ -250,10 +297,9 @@ class Prestamo(admin.ModelAdmin):
         "fecha_entrga",
         "libro",
         "suscriptor",
+        "devolucion",
     )
     list_display_links = (
-        "fecha_prestamo",
-        "fecha_entrga",
         "libro",
         "suscriptor",
     )
@@ -282,9 +328,7 @@ class Lecturade_libro(admin.ModelAdmin):
     )
     date_hierarchy = "fecha"
 
-    actions = [
-        generar_reporte_expediente_lectura_pdf
-    ]
+    actions = [generar_reporte_expediente_lectura_pdf]
 
 
 @admin.register(Trabajador)
@@ -301,46 +345,71 @@ class Trabajador(admin.ModelAdmin):
     ordering = ("nombre", "expediente", "direccion", "Telefono")
     list_display_links = ("nombre", "expediente", "direccion", "Telefono")
 
-def libros_view( obj):
+
+def libros_view(obj):
     nombres = [v.titulo for v in obj.libros.all()]
     return mark_safe("<br>\n".join(nombres))
-libros_view.short_description="Libros"
 
-def revistas_view( obj):
+
+libros_view.short_description = "Libros"
+
+
+def revistas_view(obj):
     nombres = [v.nombre for v in obj.revistas.all()]
     return mark_safe("<br>\n".join(nombres))
-revistas_view.short_description="Revista"
 
-def mobiliario_view( obj):
+
+revistas_view.short_description = "Revista"
+
+
+def mobiliario_view(obj):
     nombres = [v.nombre_tipoMueble for v in obj.mobiliarios.all()]
     return mark_safe("<br>\n".join(nombres))
-mobiliario_view.short_description="Mobiliario"
 
-def audiovisual_view( obj):
+
+mobiliario_view.short_description = "Mobiliario"
+
+
+def audiovisual_view(obj):
     nombres = [v.titulo for v in obj.materiales_audiovisuales.all()]
     return mark_safe("<br>\n".join(nombres))
-audiovisual_view.short_description="MaterialAudiovisual"
+
+
+audiovisual_view.short_description = "MaterialAudiovisual"
+
 
 @admin.register(Inventario)
 class Inventario(admin.ModelAdmin):
-
     readonly_fields = ["fecha"]
-    list_display = ("fecha",libros_view,revistas_view,mobiliario_view,audiovisual_view)
+    list_display = (
+        "fecha",
+        libros_view,
+        revistas_view,
+        mobiliario_view,
+        audiovisual_view,
+    )
     search_fields = ("fecha",)
-    list_filter = ("fecha","libros__titulo","revistas__nombre","mobiliarios__nombre_tipoMueble","materiales_audiovisuales__titulo")
+    list_filter = (
+        "fecha",
+        "libros__titulo",
+        "revistas__nombre",
+        "mobiliarios__nombre_tipoMueble",
+        "materiales_audiovisuales__titulo",
+    )
     ordering = ("fecha",)
     list_display_links = ("fecha",)
     date_hierarchy = "fecha"
-    filter_horizontal = ["libros","revistas","mobiliarios","materiales_audiovisuales"]
+    filter_horizontal = [
+        "libros",
+        "revistas",
+        "mobiliarios",
+        "materiales_audiovisuales",
+    ]
 
 
 @admin.register(Asistencia)
 class Asistencia(admin.ModelAdmin):
-    list_display = (
-        "fecha",
-        "trabajador",
-        'horas'
-    )
+    list_display = ("fecha", "trabajador", "horas")
     search_fields = ("fecha",)
     list_filter = (
         "fecha",
@@ -353,9 +422,27 @@ class Asistencia(admin.ModelAdmin):
     list_display_links = (
         "fecha",
         "trabajador",
-        'horas',
+        "horas",
     )
     date_hierarchy = "fecha"
-    actions = [
-        generar_reporte_informe_asistencia_pdf
-    ]
+    actions = [generar_reporte_informe_asistencia_pdf]
+
+
+@admin.register(UsuariosEventuales)
+class UsuariosEventuales(admin.ModelAdmin):
+    list_display = ("user", "fecha", "caduco")
+    search_fields = ("fecha",)
+    list_filter = ("fecha",)
+    ordering = ("fecha",)
+    list_display_links = ("user", "fecha", "caduco")
+    date_hierarchy = "fecha"
+
+@admin.register(ConfiguracionBiblio)
+class ConfiguracionBiblio(SingletonModelAdmin):
+    pass
+
+@admin.register(Archivo)
+class Archivo(admin.ModelAdmin):
+    list_display = ("user",)
+    ordering = ("user",)
+    list_display_links = ("user",)

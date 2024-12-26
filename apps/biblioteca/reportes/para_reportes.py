@@ -18,16 +18,18 @@ def custom_export_report_by_name(template_name, data, file="reporte", send_email
     if not report:
         return HttpResponseServerError("Este reporte no se encuentra disponible")
 
-
     return customReportPDF(
-        report.report_definition, data, file,
+        report.report_definition,
+        data,
+        file,
     )
 
 
 def customReportPDF(
-    report_definition, data, file="reporte",
+    report_definition,
+    data,
+    file="reporte",
 ):
-
     try:
         report_inst = Report(json.loads(report_definition), data)
 
@@ -35,7 +37,6 @@ def customReportPDF(
             raise ReportBroError(report_inst.errors[0])
 
         pdf_report = report_inst.generate_pdf()
-
 
         response = HttpResponse(bytes(pdf_report), content_type="application/pdf")
         response["Content-Disposition"] = 'attachment; filename="{filename}"'.format(
@@ -48,18 +49,18 @@ def customReportPDF(
         print(f"An error occurred: {str(e)}")
         return HttpResponse("An error occurred while processing the report")
 
+
 def generar_reporte_expediente_lectura_pdf(modeladmin, request, queryset):
     entidades: List[Lecturade_libro] = queryset
     lista = []
     for entidad in entidades:
-
-
-        lista.append({
-            "suscriptor": str(entidad.suscriptor.nombre),
-            "libro":str(entidad.libro.titulo),
-            "fecha": entidad.fecha,
-
-        })
+        lista.append(
+            {
+                "suscriptor": str(entidad.suscriptor.nombre),
+                "libro": str(entidad.libro.titulo),
+                "fecha": entidad.fecha,
+            }
+        )
 
     data = {"lista": lista}
 
@@ -67,19 +68,19 @@ def generar_reporte_expediente_lectura_pdf(modeladmin, request, queryset):
         "Expediente de Lectura", data, file="reporte", send_email=True
     )
 
+
 def generar_reporte_prestamo_pdf(modeladmin, request, queryset):
     entidades: List[Prestamo] = queryset
     lista = []
     for entidad in entidades:
-
-
-        lista.append({
-            "suscriptor": str(entidad.suscriptor.nombre),
-            "libro":str(entidad.libro.titulo),
-            "fecha": entidad.fecha_prestamo,
-            "fecha_entrega": entidad.fecha_entrga,
-
-        })
+        lista.append(
+            {
+                "suscriptor": str(entidad.suscriptor.nombre),
+                "libro": str(entidad.libro.titulo),
+                "fecha": entidad.fecha_prestamo,
+                "fecha_entrega": entidad.fecha_entrga,
+            }
+        )
 
     data = {"lista": lista}
 
@@ -92,15 +93,14 @@ def generar_reporte_informe_asistencia_pdf(modeladmin, request, queryset):
     entidades: List[Asistencia] = queryset
     lista = []
     for entidad in entidades:
-
-
-        lista.append({
-            "trabajador": str(entidad.trabajador.nombre),
-            "expediente":str(entidad.trabajador.expediente),
-            "fecha": entidad.fecha,
-            "horas":str(entidad.horas),
-
-        })
+        lista.append(
+            {
+                "trabajador": str(entidad.trabajador.nombre),
+                "expediente": str(entidad.trabajador.expediente),
+                "fecha": entidad.fecha,
+                "horas": str(entidad.horas),
+            }
+        )
 
     data = {"lista": lista}
 

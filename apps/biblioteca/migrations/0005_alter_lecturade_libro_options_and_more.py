@@ -4,23 +4,28 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('biblioteca', '0004_alter_suscriptor_direccion_and_more'),
+        ("biblioteca", "0004_alter_suscriptor_direccion_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='lecturade_libro',
-            options={'verbose_name': 'Lectura de libro', 'verbose_name_plural': 'Lecturas de libros'},
+            name="lecturade_libro",
+            options={
+                "verbose_name": "Lectura de libro",
+                "verbose_name_plural": "Lecturas de libros",
+            },
         ),
         migrations.AlterModelOptions(
-            name='librosdelmes',
-            options={'verbose_name': 'Libro del mes', 'verbose_name_plural': 'Libros del Mes'},
+            name="librosdelmes",
+            options={
+                "verbose_name": "Libro del mes",
+                "verbose_name_plural": "Libros del Mes",
+            },
         ),
         migrations.AlterField(
-            model_name='revista',
-            name='numero_serie',
-            field=models.CharField(max_length=256, verbose_name='Número de Serie'),
+            model_name="revista",
+            name="numero_serie",
+            field=models.CharField(max_length=256, verbose_name="Número de Serie"),
         ),
     ]

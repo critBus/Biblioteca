@@ -4,30 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('biblioteca', '0005_alter_lecturade_libro_options_and_more'),
+        ("biblioteca", "0005_alter_lecturade_libro_options_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='materialaudiovisual',
-            name='numero_serie',
-            field=models.CharField(max_length=256, verbose_name='Número de Serie'),
+            model_name="materialaudiovisual",
+            name="numero_serie",
+            field=models.CharField(max_length=256, verbose_name="Número de Serie"),
         ),
         migrations.AlterField(
-            model_name='muestrasmes',
-            name='horario_Cierre',
-            field=models.TimeField(verbose_name='Horario de cierre'),
+            model_name="muestrasmes",
+            name="horario_Cierre",
+            field=models.TimeField(verbose_name="Horario de cierre"),
         ),
         migrations.AlterField(
-            model_name='muestrasmes',
-            name='horario_inicio',
-            field=models.TimeField(verbose_name='Horario de inicio'),
+            model_name="muestrasmes",
+            name="horario_inicio",
+            field=models.TimeField(verbose_name="Horario de inicio"),
         ),
         migrations.AlterField(
-            model_name='revista',
-            name='numero',
-            field=models.CharField(max_length=256, verbose_name='Número de Volumen'),
+            model_name="revista",
+            name="numero",
+            field=models.CharField(max_length=256, verbose_name="Número de Volumen"),
         ),
     ]

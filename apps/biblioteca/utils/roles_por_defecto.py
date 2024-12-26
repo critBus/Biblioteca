@@ -14,21 +14,53 @@ def crear_roles_django_default():
         lista_modelos=[],
         lista_modelos_solo_update=[],
         lista_modelos_solo_create=[],
-        lista_modelos_solo_view=[Libro,Revista,MaterialAudiovisual,Concurso,MuestrasMes,LibrosDelMes,Prestamo,Lecturade_libro],
+        lista_modelos_solo_view=[
+            Libro,
+            Revista,
+            MaterialAudiovisual,
+            Concurso,
+            MuestrasMes,
+            LibrosDelMes,
+            Prestamo,
+            Lecturade_libro,
+        ],
         nombre_rol=NOMBRE_ROL_SUSCRIPTOR,
     )
     crear_rol(
         lista_modelos=[
-            Libro,Revista,MaterialAudiovisual,Concurso,MuestrasMes,LibrosDelMes,Prestamo,Lecturade_libro,Mobiliario
+            Libro,
+            Revista,
+            MaterialAudiovisual,
+            Concurso,
+            MuestrasMes,
+            LibrosDelMes,
+            Prestamo,
+            Lecturade_libro,
+            Mobiliario,
         ],
         lista_modelos_solo_update=[],
         lista_modelos_solo_create=[],
-        lista_modelos_solo_view=[Suscriptor,Asistencia,],
+        lista_modelos_solo_view=[
+            Suscriptor,
+            Asistencia,
+        ],
         nombre_rol=NOMBRE_ROL_TRABAJADOR,
     )
     crear_rol(
         lista_modelos=[
-            Libro,Revista,MaterialAudiovisual,Concurso,MuestrasMes,LibrosDelMes,Prestamo,Lecturade_libro,Inventario,Mobiliario,Suscriptor,Trabajador,Asistencia,
+            Libro,
+            Revista,
+            MaterialAudiovisual,
+            Concurso,
+            MuestrasMes,
+            LibrosDelMes,
+            Prestamo,
+            Lecturade_libro,
+            Inventario,
+            Mobiliario,
+            Suscriptor,
+            Trabajador,
+            Asistencia,
             ReportRequest,
             ReportDefinition,
             User,
@@ -40,4 +72,3 @@ def crear_roles_django_default():
         lista_modelos_solo_view=[],
         nombre_rol=NOMBRE_ROL_ADMINISTRADOR,
     )
-
