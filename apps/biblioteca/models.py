@@ -141,10 +141,31 @@ class LibroAbstracto(models.Model):
             MinValueValidator(1),
         ],
     )
+    materia = models.CharField(
+        max_length=256,
+        verbose_name="Materia",
+        validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
+    )
+    pais = models.CharField(
+        max_length=256,
+        verbose_name="País",
+        validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
+    )
+    resumen = models.CharField(
+        max_length=256,
+        verbose_name="Resumen del Contenido",
+        validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
+    )
     cantidad_prestamo = models.IntegerField(
         verbose_name="Cantidad de prestamo",
         validators=[
             MinValueValidator(0,)
+        ],
+    )
+    cantidad_paginas = models.IntegerField(
+        verbose_name="Cantidad de Páginas",
+        validators=[
+            MinValueValidator(0, )
         ],
     )
 

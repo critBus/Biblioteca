@@ -1,0 +1,26 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <h1>Bienvenido a la Biblioteca</h1>
+    <p>En nuestra biblioteca, ofrecemos una amplia variedad de libros y recursos para todos los amantes de la lectura. Explora nuestras colecciones y descubre nuevas historias.</p>
+
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Nuestra Colección</h2>
+            <img src="{% static 'img/coleccion.jpeg' %}" alt="Colección de libros" class="img-fluid" />
+            <p>Desde novelas clásicas hasta los últimos bestsellers, tenemos libros para todos los gustos.</p>
+        </div>
+        <div class="col-md-4">
+            <h2>Eventos y Talleres</h2>
+            <img src="{% static 'img/eventos.jpg' %}" alt="Eventos en la biblioteca" class="img-fluid" />
+            <p>Únete a nosotros para eventos literarios, talleres de escritura y más.</p>
+        </div>
+        <div class="col-md-4">
+            <h2>Servicios</h2>
+            <img src="{% static 'img/servicios.jpeg' %}" alt="Servicios de la biblioteca" class="img-fluid" />
+            <p>Ofrecemos servicios como préstamo de libros, acceso a Internet y salas de estudio.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

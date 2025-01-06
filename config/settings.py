@@ -150,6 +150,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 AUTH_USER_MODEL = "users.User"
 
 JAZZMIN_SETTINGS = {
+"custom_index": "admin/index.html",
     "welcome_sign": "Bienvenido",
     # title of the window (Will default to current_admin_site.site_title if absent or None)
     "site_title": "Biblioteca",

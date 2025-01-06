@@ -26,6 +26,8 @@ class LibroAdmin(admin.ModelAdmin):
     list_filter = (
         "autor",
         "genero",
+        "materia",
+
     )
     ordering = (
         "titulo",
@@ -42,39 +44,41 @@ class LibroAdmin(admin.ModelAdmin):
         "numero_copias",
     )
     date_hierarchy = "fecha_publicacion"
+    actions = [generar_reporte_lista_libros_por_autor_pdf,generar_reporte_lista_libros_por_materia_pdf]
 
-    @admin.register(LibroInfantil)
-    class LibroInfantilAdmin(admin.ModelAdmin):
-        readonly_fields = ["factor_estancia","peso"]
-        list_display = (
-            "titulo",
-            "autor",
-            "ubicacion",
-            "ilustracioes",
-            "edad_minima",
-            "edad_maxima",
-        )
-        search_fields = (
-            "titulo",
-            "autor",
-        )
-        list_filter = ("autor",)
-        ordering = (
-            "titulo",
-            "autor",
-            "ubicacion",
-            "genero",
-            "numero_copias",
-        )
-        list_display_links = (
-            "titulo",
-            "autor",
-            "ubicacion",
-            "ilustracioes",
-            "edad_minima",
-            "edad_maxima",
-        )
-        date_hierarchy = "fecha_publicacion"
+@admin.register(LibroInfantil)
+class LibroInfantilAdmin(admin.ModelAdmin):
+    readonly_fields = ["factor_estancia","peso"]
+    list_display = (
+        "titulo",
+        "autor",
+        "ubicacion",
+        "ilustracioes",
+        "edad_minima",
+        "edad_maxima",
+    )
+    search_fields = (
+        "titulo",
+        "autor",
+    )
+    list_filter = ("autor",)
+    ordering = (
+        "titulo",
+        "autor",
+        "ubicacion",
+        "genero",
+        "numero_copias",
+    )
+    list_display_links = (
+        "titulo",
+        "autor",
+        "ubicacion",
+        "ilustracioes",
+        "edad_minima",
+        "edad_maxima",
+    )
+    date_hierarchy = "fecha_publicacion"
+    actions = [generar_reporte_lista_libros_por_autor_pdf,generar_reporte_lista_libros_por_materia_pdf]
 
 
 @admin.register(Revista)
@@ -304,7 +308,7 @@ class Prestamo(admin.ModelAdmin):
         "suscriptor",
     )
     date_hierarchy = "fecha_prestamo"
-    actions = [generar_reporte_prestamo_pdf]
+    actions = [generar_reporte_prestamo_pdf,generar_reporte_lista_libros_por_prestramo_pdf]
 
 
 @admin.register(Lecturade_libro)

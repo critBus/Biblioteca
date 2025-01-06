@@ -6,6 +6,7 @@ from django.core.mail import EmailMessage
 from django.http import HttpResponse, HttpResponseServerError
 from django_reportbroD.models import ReportDefinition
 from reportbro import Report, ReportBroError
+from django.utils import timezone
 
 from ..models import *
 
@@ -106,4 +107,62 @@ def generar_reporte_informe_asistencia_pdf(modeladmin, request, queryset):
 
     return custom_export_report_by_name(
         "Informe de asistencia", data, file="reporte", send_email=True
+    )
+
+
+def generar_reporte_lista_libros_por_autor_pdf(modeladmin, request, queryset):
+    entidades: List[LibroAbstracto] = queryset
+    lista = []
+    for entidad in entidades:
+        lista.append(
+            {
+                "titulo": str(entidad.titulo),
+                "codigo": str(entidad.numero_serie),
+                "anno_edicion": str(entidad.fecha_publicacion.year),
+                "autores": str(entidad.autor),
+            }
+        )
+
+    data = {"lista": lista,"fecha_actual":timezone.now()}
+
+    return custom_export_report_by_name(
+        "Listado de Libros por Autor", data, file="reporte", send_email=True
+    )
+
+def generar_reporte_lista_libros_por_materia_pdf(modeladmin, request, queryset):
+    entidades: List[LibroAbstracto] = queryset
+    lista = []
+    for entidad in entidades:
+        lista.append(
+            {
+                "titulo": str(entidad.titulo),
+                "codigo": str(entidad.numero_serie),
+                "anno_edicion": str(entidad.fecha_publicacion.year),
+                "materia": str(entidad.materia),
+            }
+        )
+
+    data = {"lista": lista,"fecha_actual":timezone.now()}
+
+    return custom_export_report_by_name(
+        "Listado de Libros por Materia", data, file="reporte", send_email=True
+    )
+def generar_reporte_lista_libros_por_prestramo_pdf(modeladmin, request, queryset):
+    entidades: List[Prestamo] = queryset
+    lista = []
+    for entidad in entidades:
+        if entidad.libro:
+            lista.append(
+                {
+                    "titulo": str(entidad.libro.titulo),
+                    "codigo": str(entidad.libro.numero_serie),
+                    "devolucion": entidad.fecha_entrga,
+                    "CI": entidad.suscriptor.ci,
+                }
+            )
+
+    data = {"lista": lista,"fecha_actual":timezone.now()}
+
+    return custom_export_report_by_name(
+        "Listado de Libros por Prestamos", data, file="reporte", send_email=True
     )
