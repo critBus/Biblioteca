@@ -43,3 +43,9 @@ def add_user_to_group(username, group_name):
         return "El usuario o el grupo no existe."
     except Exception as e:
         return f"Ocurrió un error: {str(e)}"
+
+
+def plantilla_en_blanco(request):
+
+
+    return render(request, "biblioteca/blank.html")

@@ -157,7 +157,7 @@ class LibroAbstracto(models.Model):
         validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
     )
     cantidad_prestamo = models.IntegerField(
-        verbose_name="Cantidad de prestamo",
+        verbose_name="Cantidad de Préstamos",
         validators=[
             MinValueValidator(0,)
         ],
@@ -199,14 +199,14 @@ class Libro(LibroAbstracto):
 class Revista(models.Model):
     class Meta:
         verbose_name = "Revista"
-        verbose_name_plural = "Revista"
+        verbose_name_plural = "Revistas"
 
     factor_estancia = models.FloatField(default=0)
     peso = models.FloatField(default=0)
     nombre = models.CharField(
         max_length=256,
         verbose_name="Nombre de la Revista",
-        validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
+        validators=[RegexValidator(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
     )
     perioricidad = models.CharField(
         max_length=256,
@@ -274,7 +274,7 @@ class Revista(models.Model):
         verbose_name="Número de Serie",
     )
     cantidad_prestamo = models.IntegerField(
-        verbose_name="Cantidad de prestamo",
+        verbose_name="Cantidad de préstamos",
         validators=[
             MinValueValidator(1),
         ],
@@ -346,11 +346,11 @@ class MaterialAudiovisual(models.Model):
     )
     genero = models.CharField(
         max_length=256,
-        verbose_name="Género o Categoria",
+        verbose_name="Género o Categoría",
         null=True,
         blank=True,
         choices=[
-            ("Ficcion", "Ficcion"),
+            ("Ficción", "Ficción"),
             ("No ficción", "No ficción"),
             ("Ciencia ficción", "Ciencia ficción"),
             ("Fantasía", "Fantasía"),
@@ -390,7 +390,7 @@ class MaterialAudiovisual(models.Model):
         verbose_name="Número de Serie",
     )
     cantidad_prestamo = models.IntegerField(
-        verbose_name="Cantidad de prestamo",
+        verbose_name="Cantidad de préstamos",
         validators=[
             MinValueValidator(1),
         ],
@@ -411,7 +411,7 @@ class MaterialAudiovisual(models.Model):
 class Mobiliario(models.Model):
     class Meta:
         verbose_name = "Mobiliario"
-        verbose_name_plural = "Mobiliario"
+        verbose_name_plural = "Mobiliarios"
 
     nombre_tipoMueble = models.CharField(
         max_length=256,
@@ -431,7 +431,7 @@ class Mobiliario(models.Model):
     )
     dimenciones = models.CharField(
         max_length=256,
-        verbose_name="Dimenciones",
+        verbose_name="Dimensiones",
         validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
     )
     costo_adqisicion = models.IntegerField(
@@ -492,7 +492,7 @@ class MuestrasMes(models.Model):
     )
     genero = models.CharField(
         max_length=256,
-        verbose_name="Género o Categoria",
+        verbose_name="Género o Categoría",
         null=True,
         blank=True,
         validators=[RegexValidator(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
@@ -502,7 +502,7 @@ class MuestrasMes(models.Model):
     horario_inicio = models.TimeField(verbose_name="Horario de inicio")
     horario_Cierre = models.TimeField(verbose_name="Horario de cierre")
     edad_minima = models.IntegerField(
-        verbose_name="Edad Minima Recomendada",
+        verbose_name="Edad Mínima Recomendada",
         null=True,
         blank=True,
         validators=[
@@ -533,7 +533,7 @@ class MuestrasMes(models.Model):
         if self.edad_maxima and self.edad_minima:
             if self.edad_maxima <= self.edad_minima:
                 raise ValidationError(
-                    "La Edad de Minima debe ser inferior a la Edad de Maxima "
+                    "La Edad de Mínima debe ser inferior a la Edad de Máxima "
                 )
 
 
@@ -664,7 +664,7 @@ class LibroInfantil(LibroAbstracto):
         verbose_name_plural = "LIbros Infantiles"
     ilustracioes = models.BooleanField(default=False)
     edad_minima = models.IntegerField(
-        verbose_name="Edad Minima Recomendada",
+        verbose_name="Edad Mínima Recomendada",
         null=True,
         blank=True,
         validators=[
@@ -690,11 +690,11 @@ class LibroInfantil(LibroAbstracto):
 
 class Prestamo(models.Model):
     class Meta:
-        verbose_name = "Prestamo"
-        verbose_name_plural = "Prestamos"
+        verbose_name = "Préstamo"
+        verbose_name_plural = "Préstamos"
 
     fecha_prestamo = models.DateField(
-        verbose_name="Fecha de Prestamo", validators=[no_futuro]
+        verbose_name="Fecha de Préstamo", validators=[no_futuro]
     )
     fecha_entrga = models.DateField(verbose_name="Fecha de Entrega")
     libro = models.ForeignKey(Libro, on_delete=models.CASCADE, null=True, blank=True)
@@ -716,11 +716,11 @@ class Prestamo(models.Model):
         if self.fecha_entrga and self.fecha_prestamo:
             if self.fecha_entrga <= self.fecha_prestamo:
                 raise ValidationError(
-                    "La fecha de Prestamo debe ser inferior a la fecha de Entrega "
+                    "La fecha de Préstamo debe ser inferior a la fecha de Entrega "
                 )
         if self.suscriptor.get_peso_acumulado()>ConfiguracionBiblio.get_solo().peso_maximo:
             raise ValidationError(
-                "Exdio el peso maximo"
+                "Exedió el peso máximo"
             )
 
     def save(self, *args, **keyargs):
@@ -754,7 +754,7 @@ class Concurso(models.Model):
     )
     categorias = models.CharField(
         max_length=256,
-        verbose_name="Categoria",
+        verbose_name="Categoría",
         validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
     )
     modalidad = models.CharField(
@@ -837,7 +837,7 @@ class Trabajador(models.Model):
 
 class Asistencia(models.Model):
     class Meta:
-        verbose_name = "Informe de Assitecias"
+        verbose_name = "Informe de Asitecias"
         verbose_name_plural = "Informes de Asistencias"
 
     fecha = models.DateField(verbose_name="Fecha", validators=[no_futuro])
@@ -872,7 +872,7 @@ class ConfiguracionBiblio(SingletonModel):
 class Archivo(models.Model):
     class Meta:
         verbose_name = "Archivo Histórioco"
-        verbose_name_plural = "Archivos Historicos"
+        verbose_name_plural = "Archivos Históricos"
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
