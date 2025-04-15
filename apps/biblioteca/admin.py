@@ -476,11 +476,11 @@ class Asistencia(admin.ModelAdmin):
 
 @admin.register(UsuariosEventuales)
 class UsuariosEventuales(admin.ModelAdmin):
-    list_display = ("user", "fecha", "caduco")
+    list_display = ("user", "fecha",)
     search_fields = ("fecha",)
     list_filter = ("fecha",)
     ordering = ("fecha",)
-    list_display_links = ("user", "fecha", "caduco")
+    list_display_links = ("user", "fecha",)
     date_hierarchy = "fecha"
 
 @admin.register(ConfiguracionBiblio)

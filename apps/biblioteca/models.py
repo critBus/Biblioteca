@@ -913,8 +913,25 @@ class UsuariosEventuales(models.Model):
         null=True,
         blank=True,
     )
-    fecha = models.DateField(verbose_name="Fecha", validators=[no_pasado])
-    caduco = models.BooleanField(default=False)
+    fecha = models.DateField(verbose_name="Fecha de vencimiento", validators=[no_pasado])
+
+    def mover_a_archivo(self):
+        """Mueve el usuario a archivo histórico y elimina el registro actual"""
+        Archivo.objects.create(
+            user=self.user,
+            fecha_inicio=timezone.now().date() - timezone.timedelta(days=30),  # Estimación de fecha inicio (30 días antes)
+            fecha_fin=self.fecha
+        )
+        self.delete()
+
+    @classmethod
+    def verificar_usuarios_vencidos(cls):
+        """Verifica y mueve usuarios vencidos al archivo histórico"""
+        fecha_actual = timezone.now().date()
+        usuarios_vencidos = cls.objects.filter(fecha__lt=fecha_actual)
+        
+        for usuario in usuarios_vencidos:
+            usuario.mover_a_archivo()
 
 
 class ConfiguracionBiblio(SingletonModel):
@@ -924,14 +941,20 @@ class ConfiguracionBiblio(SingletonModel):
 
     peso_maximo = models.FloatField(default=0)
 
+
 class Archivo(models.Model):
     class Meta:
-        verbose_name = "Archivo Histórioco"
+        verbose_name = "Archivo Histórico"
         verbose_name_plural = "Archivos Históricos"
 
     user = models.ForeignKey(
-        UsuariosEventuales,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         null=True,
         blank=True,
     )
+    fecha_inicio = models.DateField(verbose_name="Fecha de inicio")
+    fecha_fin = models.DateField(verbose_name="Fecha de fin")
+
+    def __str__(self):
+        return f"{self.user} - {self.fecha_inicio} a {self.fecha_fin}"
