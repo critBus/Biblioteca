@@ -930,7 +930,7 @@ class Archivo(models.Model):
         verbose_name_plural = "Archivos Históricos"
 
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        UsuariosEventuales,
         on_delete=models.CASCADE,
         null=True,
         blank=True,
