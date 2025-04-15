@@ -1,4 +1,7 @@
 from django.contrib import admin
+from django.urls import path
+from django.contrib import messages
+from django.shortcuts import redirect
 
 # Register your models here.
 from django.utils.safestring import mark_safe
@@ -246,10 +249,46 @@ class LibrosDelMes(admin.ModelAdmin):
         "fecha",
     )
     date_hierarchy = "fecha"
+    
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                'calcular-libro-mes/',
+                self.admin_site.admin_view(self.calcular_libro_mes_view),
+                name='calcular-libro-mes',
+            ),
+        ]
+        return custom_urls + urls
+
+    def calcular_libro_mes_view(self, request):
+        if request.method == 'POST':
+            libro_mes = calcular_libro_mes()
+            if libro_mes:
+                self.message_user(
+                    request,
+                    f'Se ha actualizado el libro del mes: {libro_mes.libro.titulo}',
+                    messages.SUCCESS
+                )
+            else:
+                self.message_user(
+                    request,
+                    'No se pudo determinar el libro del mes',
+                    messages.ERROR
+                )
+        return redirect('..')
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['show_calcular_button'] = True
+        return super().changelist_view(request, extra_context)
+
     def has_add_permission(self, request):
-        return  False
+        return True
+
     def has_change_permission(self, request, obj=None):
-        return False
+        return True
+
 
 @admin.register(Concurso)
 class Concurso(admin.ModelAdmin):

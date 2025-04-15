@@ -623,17 +623,70 @@ class LibrosDelMes(models.Model):
     class Meta:
         verbose_name = "Libro del mes"
         verbose_name_plural = "Libros del Mes"
-
+        
     libro = models.ForeignKey(Libro, on_delete=models.CASCADE)
     fecha = models.DateField(verbose_name="Fecha", validators=[no_futuro])
 
+    
+    
+
     def clean(self):
+        super().clean()
         if LibrosDelMes.objects.filter(
             fecha__month=self.fecha.month, fecha__year=self.fecha.year
         ).exists():
             raise ValidationError("Solo puede ser un libro en el mes")
 
+def calcular_libro_mes():
+    """Calcula el libro del mes basado en préstamos y lecturas del mes actual"""
+    mes_actual = timezone.now().date().replace(day=1)
+    
+    # Obtener todos los libros con sus préstamos y lecturas
+    libros = Libro.objects.all()
+    libro_mas_popular = None
+    max_peso = -1
 
+    for libro in libros:
+        # Calcular peso basado en préstamos y lecturas del mes actual
+        prestamos_mes = Prestamo.objects.filter(
+            libro=libro,
+            fecha_prestamo__year=mes_actual.year,
+            fecha_prestamo__month=mes_actual.month
+        ).count()
+
+        lecturas_mes = Lecturade_libro.objects.filter(
+            libro=libro,
+            fecha__year=mes_actual.year,
+            fecha__month=mes_actual.month
+        ).count()
+        
+        peso_total = (
+            libro.peso +  # Peso base del libro (incluye factor_estancia)
+            prestamos_mes * 2 +  # Doble peso por préstamos del mes
+            lecturas_mes  # Peso por lecturas del mes
+        )
+        
+        if peso_total > max_peso:
+            max_peso = peso_total
+            libro_mas_popular = libro
+
+    if libro_mas_popular:
+        # Actualizar o crear el libro del mes
+        libro_mes, created = LibrosDelMes.objects.get_or_create(
+            fecha__year=mes_actual.year,
+            fecha__month=mes_actual.month,
+            defaults={
+                'libro': libro_mas_popular,
+                'fecha': mes_actual
+            }
+        )
+        
+        if not created:
+            libro_mes.libro = libro_mas_popular
+            libro_mes.save()
+
+        return libro_mes
+    return None
 class Inventario(models.Model):
     class Meta:
         verbose_name = "Inventario"
