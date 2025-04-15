@@ -639,7 +639,8 @@ class LibrosDelMes(models.Model):
 
 def calcular_libro_mes():
     """Calcula el libro del mes basado en préstamos y lecturas del mes actual"""
-    mes_actual = timezone.now().date().replace(day=1)
+    fecha_actual = timezone.now().date()
+    mes_actual = fecha_actual.replace(day=1)
     
     # Obtener todos los libros con sus préstamos y lecturas
     libros = Libro.objects.all()
@@ -677,12 +678,13 @@ def calcular_libro_mes():
             fecha__month=mes_actual.month,
             defaults={
                 'libro': libro_mas_popular,
-                'fecha': mes_actual
+                'fecha': fecha_actual  # Usar la fecha actual en lugar del primer día del mes
             }
         )
         
         if not created:
             libro_mes.libro = libro_mas_popular
+            libro_mes.fecha = fecha_actual  # Actualizar la fecha al día actual
             libro_mes.save()
 
         return libro_mes
