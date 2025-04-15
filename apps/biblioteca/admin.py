@@ -246,7 +246,10 @@ class LibrosDelMes(admin.ModelAdmin):
         "fecha",
     )
     date_hierarchy = "fecha"
-
+    def has_add_permission(self, request):
+        return  False
+    def has_change_permission(self, request, obj=None):
+        return False
 
 @admin.register(Concurso)
 class Concurso(admin.ModelAdmin):

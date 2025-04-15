@@ -1,0 +1,27 @@
+{% extends "biblioteca/blank.html" %}
+
+{% block content %}
+
+<h1>Registrar Asistencia</h1>
+    <form method="POST" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_fecha">Fecha:</label>
+                <input id="fecha" type="date" name="fecha" class="form-control mb-4">
+                {{ form.fecha.errors }}
+            </div>
+            <div class="form-group">
+                <label for="id_trabajador">Trabajador:</label>
+                {{ form.trabajador }}
+                {{ form.trabajador.errors }}
+            </div>
+            <div class="form-group">
+                <label for="id_horas">Horas Trabajadas:</label>
+                {{ form.horas}}
+                {{ form.horas.errors }}
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Asistencia</button>
+        </form>
+    <a href="{% url 'tabla_asistencia' %}">Volver a la lista de asistencias</a>  <!-- Ajusta la URL según sea necesario -->
+
+{% endblock %}

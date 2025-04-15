@@ -183,6 +183,11 @@ JAZZMIN_SETTINGS = {
                 "reportbroD.add_reportdefinition",
             ],
         },
+        {
+            # "name": "Plantillas",
+            # "url": "/usuarios_eventuales/",
+
+        },
     ],
     # "order_with_respect_to": [
     #     "users",

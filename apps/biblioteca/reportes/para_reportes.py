@@ -78,8 +78,8 @@ def generar_reporte_prestamo_pdf(modeladmin, request, queryset):
             {
                 "suscriptor": str(entidad.suscriptor.nombre),
                 "libro": str(entidad.libro.titulo),
-                "fecha": entidad.fecha_prestamo,
-                "fecha_entrega": entidad.fecha_entrga,
+                "fecha": str(entidad.fecha_prestamo),
+                "fecha_entrega": str(entidad.fecha_entrga),
             }
         )
 

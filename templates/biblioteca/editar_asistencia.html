@@ -1,0 +1,38 @@
+{% extends "biblioteca/blank.html" %}
+
+{% block content %}
+
+<div class="container">
+    <h2>Editar Asistencia</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.fecha.label }}
+            <input id="fecha" type="date" name="fecha" class="form-control mb-4"
+        value="{{ fecha }}"
+    >
+            {% if form.fecha.errors %}
+                <div class="text-danger">{{ form.fecha.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.trabajador.label }}
+            {{ form.trabajador }}
+            {% if form.trabajador.errors %}
+                <div class="text-danger">{{ form.trabajador.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.horas.label }}
+            {{ form.horas }}
+            {% if form.horas.errors %}
+                <div class="text-danger">{{ form.horas.errors }}</div>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </form>
+    <a href="{% url 'tabla_asistencia' %}" class="btn btn-secondary mt-3">Cancelar</a>
+</div>
+
+
+{% endblock %}

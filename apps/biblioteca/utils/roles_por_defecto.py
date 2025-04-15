@@ -36,18 +36,29 @@ def crear_roles_django_default():
             LibrosDelMes,
             Prestamo,
             Lecturade_libro,
+            Inventario,
             Mobiliario,
+            Suscriptor,
+            Trabajador,
+            Asistencia,
+        ],
+        lista_modelos_solo_update=[],
+        lista_modelos_solo_create=[],
+        lista_modelos_solo_view=[],
+        nombre_rol=NOMBRE_ROL_BIBLIOTECARIO,
+    )
+    crear_rol(
+        lista_modelos=[
+
+            ReportRequest,
+            ReportDefinition,
+            User,
+            Group,
+            Permission,
         ],
         lista_modelos_solo_update=[],
         lista_modelos_solo_create=[],
         lista_modelos_solo_view=[
-            Suscriptor,
-            Asistencia,
-        ],
-        nombre_rol=NOMBRE_ROL_TRABAJADOR,
-    )
-    crear_rol(
-        lista_modelos=[
             Libro,
             Revista,
             MaterialAudiovisual,
@@ -61,14 +72,6 @@ def crear_roles_django_default():
             Suscriptor,
             Trabajador,
             Asistencia,
-            ReportRequest,
-            ReportDefinition,
-            User,
-            Group,
-            Permission,
         ],
-        lista_modelos_solo_update=[],
-        lista_modelos_solo_create=[],
-        lista_modelos_solo_view=[],
         nombre_rol=NOMBRE_ROL_ADMINISTRADOR,
     )
