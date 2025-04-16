@@ -18,6 +18,12 @@ class Command(BaseCommand):
         # Crear usuarios
         self.create_users()
         
+        # Crear trabajadores
+        self.create_trabajadores()
+        
+        # Crear libros infantiles
+        self.create_libros_infantiles()
+        
         # Crear libros
         self.create_libros()
         
@@ -41,6 +47,21 @@ class Command(BaseCommand):
         
         # Crear muestras del mes
         self.create_muestras()
+
+        # Crear concursos
+        self.create_concursos()
+        
+        # Crear asistencias
+        self.create_asistencias()
+        
+        # Crear usuarios eventuales
+        self.create_usuarios_eventuales()
+        
+        # Crear libros del mes
+        self.create_libros_del_mes()
+        
+        # Crear inventarios
+        self.create_inventarios()
         
         # Crear configuración
         self.create_configuracion()
@@ -58,6 +79,51 @@ class Command(BaseCommand):
             password=password,
             first_name=fake.first_name(),
             last_name=fake.last_name())
+
+    def create_trabajadores(self):
+        # Crear trabajadores de prueba
+        for _ in range(5):
+            Trabajador.objects.create(
+                nombre=fake.name(),
+                edad=random.randint(18, 65),
+                sexo=random.choice(["Masculino", "Femenino"]),
+                expediente=str(random.randint(10000000000, 99999999999)),
+                direccion=fake.address(),
+                Telefono=str(random.randint(10000000, 99999999)),
+                ci=random.randint(10000000000, 99999999999),
+                sindicato=random.choice([True, False]),
+                nivel_escolar=random.choice(["Primaria", "Secundaria", "Preuniversitario", "Universitario"])
+            )
+
+    def create_libros_infantiles(self):
+        # Crear libros infantiles de prueba
+        generos = ["Ficcion", "No ficción", "Fantasía", "Aventura"]
+        estados = ["Bueno", "Regular", "Malo"]
+        
+        for _ in range(15):
+            LibroInfantil.objects.create(
+                titulo=fake.catch_phrase(),
+                editorial=fake.company(),
+                autor=fake.name(),
+                fecha_publicacion=fake.date_between(start_date='-5y', end_date='today'),
+                edicion=str(random.randint(1, 5)),
+                estado=random.choice(estados),
+                ubicacion=f"Estante Infantil {random.randint(1, 5)}",
+                descripcion=fake.text(max_nb_chars=200),
+                genero=random.choice(generos),
+                fecha_adquisicion=fake.date_between(start_date='-2y', end_date='today'),
+                numero_copias=random.randint(1, 8),
+                numero_serie=random.randint(1000, 9999),
+                materia="Infantil",
+                pais=fake.country(),
+                resumen=fake.text(max_nb_chars=200),
+                cantidad_prestamo=random.randint(0, 30),
+                cantidad_paginas=random.randint(20, 100),
+                peso=random.uniform(0.1, 1.0),
+                ilustracioes=random.choice([True, False]),
+                edad_minima=random.randint(3, 8),
+                edad_maxima=random.randint(9, 12)
+            )
 
     def create_libros(self):
         # Crear libros de prueba
@@ -228,6 +294,70 @@ class Command(BaseCommand):
                 edad_maxima=random.randint(13, 18),
                 direccion=fake.address()
             )
+
+    def create_concursos(self):
+        # Crear concursos de prueba
+        modalidades = ["Presencial", "Virtual", "Híbrido"]
+        for _ in range(5):
+            fecha_inicio = fake.date_between(start_date='today', end_date='+6m')
+            Concurso.objects.create(
+                nombre=fake.catch_phrase(),
+                modalidad=random.choice(modalidades),
+                fecha_inicio=fecha_inicio,
+                fecha_cierre=fecha_inicio + timedelta(days=random.randint(7, 30)),
+                descrpcion=fake.sentence(),
+                categorias=random.choice(["Infantil", "Juvenil", "Adulto", "General"])
+            )
+
+    def create_asistencias(self):
+        # Crear registros de asistencia
+        trabajadores = Trabajador.objects.all()
+        for trabajador in trabajadores:
+            for _ in range(20):  # 20 días de asistencia por trabajador
+                fecha = fake.date_between(start_date='-2m', end_date='today')
+                Asistencia.objects.create(
+                    fecha=fecha,
+                    trabajador=trabajador,
+                    horas=random.randint(4, 8)
+                )
+
+    def create_usuarios_eventuales(self):
+        # Crear usuarios eventuales
+        users = User.objects.all()
+        for _ in range(15):
+            user = random.choice(users)
+            UsuariosEventuales.objects.create(
+                user=user,
+                fecha=fake.date_between(start_date='-1m', end_date='+1m')
+            )
+
+    def create_libros_del_mes(self):
+        # Crear libros del mes
+        libros = Libro.objects.all()
+        for _ in range(6):  # últimos 6 meses
+            fecha = fake.date_between(start_date='-6m', end_date='today')
+            LibrosDelMes.objects.create(
+                libro=random.choice(libros),
+                fecha=fecha
+            )
+
+    def create_inventarios(self):
+        # Crear inventarios
+        libros = list(Libro.objects.all())
+        revistas = list(Revista.objects.all())
+        mobiliarios = list(Mobiliario.objects.all())
+        materiales = list(MaterialAudiovisual.objects.all())
+
+        for _ in range(3):  # Crear 3 inventarios históricos
+            inventario = Inventario.objects.create(
+                fecha=fake.date_between(start_date='-1y', end_date='today')
+            )
+            
+            # Agregar items aleatorios al inventario
+            inventario.libros.set(random.sample(libros, k=min(len(libros), random.randint(5, len(libros)))))
+            inventario.revistas.set(random.sample(revistas, k=min(len(revistas), random.randint(3, len(revistas)))))
+            inventario.mobiliarios.set(random.sample(mobiliarios, k=min(len(mobiliarios), random.randint(2, len(mobiliarios)))))
+            inventario.materiales_audiovisuales.set(random.sample(materiales, k=min(len(materiales), random.randint(2, len(materiales)))))
 
     def create_configuracion(self):
         # Crear configuración de la biblioteca
