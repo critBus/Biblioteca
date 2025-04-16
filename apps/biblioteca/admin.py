@@ -418,62 +418,61 @@ def libros_view(obj):
     nombres = [v.titulo for v in obj.libros.all()]
     return mark_safe("<br>\n".join(nombres))
 
-
 libros_view.short_description = "Libros"
-
 
 def revistas_view(obj):
     nombres = [v.nombre for v in obj.revistas.all()]
     return mark_safe("<br>\n".join(nombres))
 
-
-revistas_view.short_description = "Revista"
-
+revistas_view.short_description = "Revistas"
 
 def mobiliario_view(obj):
     nombres = [v.nombre_tipoMueble for v in obj.mobiliarios.all()]
     return mark_safe("<br>\n".join(nombres))
 
-
 mobiliario_view.short_description = "Mobiliario"
-
 
 def audiovisual_view(obj):
     nombres = [v.titulo for v in obj.materiales_audiovisuales.all()]
     return mark_safe("<br>\n".join(nombres))
 
-
-audiovisual_view.short_description = "MaterialAudiovisual"
+audiovisual_view.short_description = "Material Audiovisual"
 
 
 @admin.register(Inventario)
-class Inventario(admin.ModelAdmin):
+class InventarioAdmin(admin.ModelAdmin):
     readonly_fields = ["fecha"]
-    list_display = (
-        "fecha",
-        libros_view,
-        revistas_view,
-        mobiliario_view,
-        audiovisual_view,
-    )
-    search_fields = ("fecha",)
-    list_filter = (
-        "fecha",
-        "libros__titulo",
-        "revistas__nombre",
-        "mobiliarios__nombre_tipoMueble",
-        "materiales_audiovisuales__titulo",
-    )
-    ordering = ("fecha",)
-    list_display_links = ("fecha",)
+    list_display = ("fecha",)
     date_hierarchy = "fecha"
-    filter_horizontal = [
-        "libros",
-        "revistas",
-        "mobiliarios",
-        "materiales_audiovisuales",
-    ]
+    filter_horizontal = ("libros", "revistas", "mobiliarios", "materiales_audiovisuales")
 
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        extra_context = extra_context or {}
+        obj = self.get_object(request, object_id)
+        if obj:
+            extra_context['libros'] = obj.libros.all()
+            extra_context['revistas'] = obj.revistas.all()
+            extra_context['mobiliarios'] = obj.mobiliarios.all()
+            extra_context['materiales_audiovisuales'] = obj.materiales_audiovisuales.all()
+        return super().change_view(request, object_id, form_url, extra_context=extra_context)
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        # Obtener todos los inventarios
+        inventarios = self.get_queryset(request)
+        if inventarios.exists():
+            # Usar el último inventario
+            ultimo_inventario = inventarios.latest('fecha')
+            extra_context['libros'] = ultimo_inventario.libros.all()
+            extra_context['revistas'] = ultimo_inventario.revistas.all()
+            extra_context['mobiliarios'] = ultimo_inventario.mobiliarios.all()
+            extra_context['materiales_audiovisuales'] = ultimo_inventario.materiales_audiovisuales.all()
+        return super().changelist_view(request, extra_context=extra_context)
+
+    class Media:
+        css = {
+            'all': ('css/inventario_admin.css',)
+        }
 
 @admin.register(Asistencia)
 class Asistencia(admin.ModelAdmin):

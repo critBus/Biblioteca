@@ -1,0 +1,106 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block content %}
+<div class="inventario-container">
+    <!-- Tabla de Libros -->
+    <div class="inventario-section">
+        <h2>Libros en Inventario</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Autor</th>
+                    <th>Editorial</th>
+                    <th>Copias</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for libro in libros %}
+                <tr>
+                    <td>{{ libro.titulo }}</td>
+                    <td>{{ libro.autor }}</td>
+                    <td>{{ libro.editorial }}</td>
+                    <td>{{ libro.numero_copias }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Tabla de Revistas -->
+    <div class="inventario-section">
+        <h2>Revistas en Inventario</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Editorial</th>
+                    <th>Número</th>
+                    <th>Copias</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for revista in revistas %}
+                <tr>
+                    <td>{{ revista.nombre }}</td>
+                    <td>{{ revista.editorial }}</td>
+                    <td>{{ revista.numero }}</td>
+                    <td>{{ revista.numero_copias }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Tabla de Mobiliario -->
+    <div class="inventario-section">
+        <h2>Mobiliario en Inventario</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Ubicación</th>
+                    <th>Estado</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mueble in mobiliarios %}
+                <tr>
+                    <td>{{ mueble.nombre_tipoMueble }}</td>
+                    <td>{{ mueble.ubicacion }}</td>
+                    <td>{{ mueble.estado }}</td>
+                    <td>{{ mueble.cantidad }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Tabla de Materiales Audiovisuales -->
+    <div class="inventario-section">
+        <h2>Materiales Audiovisuales en Inventario</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Creador</th>
+                    <th>Formato</th>
+                    <th>Copias</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for material in materiales_audiovisuales %}
+                <tr>
+                    <td>{{ material.titulo }}</td>
+                    <td>{{ material.creador }}</td>
+                    <td>{{ material.formato }}</td>
+                    <td>{{ material.numero_copias }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
