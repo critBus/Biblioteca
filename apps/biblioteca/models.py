@@ -773,10 +773,11 @@ class Prestamo(models.Model):
                 raise ValidationError(
                     "La fecha de Préstamo debe ser inferior a la fecha de Entrega "
                 )
-        if self.suscriptor.get_peso_acumulado()>ConfiguracionBiblio.get_solo().peso_maximo:
-            raise ValidationError(
-                "Exedió el peso máximo"
-            )
+        if self.suscriptor:
+            if self.suscriptor.get_peso_acumulado()>ConfiguracionBiblio.get_solo().peso_maximo:
+                raise ValidationError(
+                    "Exedió el peso máximo"
+                )
 
     def save(self, *args, **keyargs):
         es_nuevo = self.pk is None
