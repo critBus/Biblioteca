@@ -757,7 +757,7 @@ class Prestamo(models.Model):
         Revista, on_delete=models.CASCADE, null=True, blank=True
     )
     libro_infantil = models.ForeignKey(LibroInfantil, on_delete=models.CASCADE, null=True, blank=True)
-    suscriptor = models.ForeignKey(Suscriptor, on_delete=models.CASCADE)
+    suscriptor = models.ForeignKey(Suscriptor, on_delete=models.CASCADE,null=False, blank=False)
     devolucion = models.BooleanField(default=False)
     def get_peso(self):
         if self.libro:
@@ -773,11 +773,11 @@ class Prestamo(models.Model):
                 raise ValidationError(
                     "La fecha de Préstamo debe ser inferior a la fecha de Entrega "
                 )
-        if self.suscriptor:
-            if self.suscriptor.get_peso_acumulado()>ConfiguracionBiblio.get_solo().peso_maximo:
-                raise ValidationError(
-                    "Exedió el peso máximo"
-                )
+        # if self.suscriptor:
+        #     if self.suscriptor.get_peso_acumulado()>ConfiguracionBiblio.get_solo().peso_maximo:
+        #         raise ValidationError(
+        #             "Exedió el peso máximo"
+        #         )
 
     def save(self, *args, **keyargs):
         es_nuevo = self.pk is None

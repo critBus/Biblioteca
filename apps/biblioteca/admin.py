@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib import messages
 from django.shortcuts import redirect
-
+import traceback
 # Register your models here.
 from django.utils.safestring import mark_safe
 from solo.admin import SingletonModelAdmin
@@ -352,6 +352,28 @@ class Prestamo(admin.ModelAdmin):
     date_hierarchy = "fecha_prestamo"
     actions = [generar_reporte_prestamo_pdf,generar_reporte_lista_libros_por_prestramo_pdf]
 
+    def save_model(self, request, obj, form, change):
+        # Validación de peso máximo antes de guardar
+        if obj.suscriptor and hasattr(obj.suscriptor, 'get_peso_acumulado'):
+            peso_actual = obj.suscriptor.get_peso_acumulado()
+            # Sumar el peso del nuevo préstamo
+            if hasattr(obj, 'get_peso'):
+                peso_actual += obj.get_peso()
+            try:
+                conf=ConfiguracionBiblio.objects.first()
+                if conf:
+                    print(conf)
+                    peso_maximo = conf.peso_maximo
+                else:
+                    peso_maximo=0
+            except Exception:
+                print(traceback.format_exc())
+                peso_maximo = 0
+            if peso_actual > peso_maximo:
+                self.message_user(request, f"El suscriptor excede el peso máximo permitido ({peso_maximo}). No se puede guardar el préstamo.", level=messages.ERROR)
+                return
+        super().save_model(request, obj, form, change)
+
 
 @admin.register(Lecturade_libro)
 class Lecturade_libro(admin.ModelAdmin):
@@ -483,9 +505,8 @@ class UsuariosEventuales(admin.ModelAdmin):
     list_display_links = ("user", "fecha",)
     date_hierarchy = "fecha"
 
-
 @admin.register(ConfiguracionBiblio)
-class ConfiguracionBiblio(SingletonModelAdmin):
+class ConfiguracionBiblioAdmin(SingletonModelAdmin):
     pass
 
 @admin.register(Archivo)
