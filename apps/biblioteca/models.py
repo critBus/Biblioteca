@@ -933,6 +933,13 @@ class UsuariosEventuales(models.Model):
         for usuario in usuarios_vencidos:
             usuario.mover_a_archivo()
 
+def verificar_usuarios_vencidos():
+    """Verifica y mueve usuarios vencidos al archivo histórico"""
+    fecha_actual = timezone.now().date()
+    usuarios_vencidos = UsuariosEventuales.objects.filter(fecha__lt=fecha_actual)
+    
+    for usuario in usuarios_vencidos:
+        usuario.mover_a_archivo()
 
 class ConfiguracionBiblio(SingletonModel):
     class Meta:
