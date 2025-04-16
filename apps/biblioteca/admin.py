@@ -483,6 +483,28 @@ class UsuariosEventuales(admin.ModelAdmin):
     list_display_links = ("user", "fecha",)
     date_hierarchy = "fecha"
 
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                'actualizar-archivo/', 
+                self.admin_site.admin_view(self.actualizar_archivo_view),
+                name='actualizar-archivo',
+            ),
+        ]
+        return custom_urls + urls
+
+    def actualizar_archivo_view(self, request):
+        self.model.verificar_usuarios_vencidos()
+        self.message_user(request, "Se ha actualizado el archivo histórico correctamente", messages.SUCCESS)
+        return redirect("..")
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['show_actualizar_button'] = True
+        return super().changelist_view(request, extra_context)
+
+
 @admin.register(ConfiguracionBiblio)
 class ConfiguracionBiblio(SingletonModelAdmin):
     pass
