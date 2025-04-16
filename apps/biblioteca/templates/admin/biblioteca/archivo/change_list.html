@@ -4,8 +4,8 @@
 {% block object-tools-items %}
     {% if show_actualizar_button %}
     <li>
-        <a href="{% url 'admin:actualizar-archivo' %}" class="btn btn-high">
-            Actualizar Archivo Histórico
+        <a href="{% url 'admin:actualizar-archivo' %}" class="btn btn-primary float-right">
+            <i class="fas fa-sync"></i> Actualizar Archivo Histórico
         </a>
     </li>
     {% endif %}

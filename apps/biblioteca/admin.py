@@ -284,10 +284,10 @@ class LibrosDelMes(admin.ModelAdmin):
         return super().changelist_view(request, extra_context)
 
     def has_add_permission(self, request):
-        return True
+        return False
 
     def has_change_permission(self, request, obj=None):
-        return True
+        return False
 
 
 @admin.register(Concurso)
@@ -512,3 +512,8 @@ class Archivo(admin.ModelAdmin):
         extra_context = extra_context or {}
         extra_context['show_actualizar_button'] = True
         return super().changelist_view(request, extra_context)
+    def has_add_permission(self, request):
+        return  False
+
+    def has_change_permission(self, request, obj=None):
+        return False
