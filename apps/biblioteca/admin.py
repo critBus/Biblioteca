@@ -13,24 +13,28 @@ from .reportes.para_reportes import *
 
 @admin.register(Libro)
 class LibroAdmin(admin.ModelAdmin):
-    readonly_fields = ["factor_estancia"]
+    readonly_fields = ["factor_estancia", "peso"]
     list_display = (
         "titulo",
         "autor",
         "ubicacion",
+        "tipo_libro",
         "genero",
         "numero_copias",
+        "ilustraciones",
+        "edad_minima",
+        "edad_maxima",
     )
     search_fields = (
         "titulo",
-        "numero_serie"
-
+        "numero_serie",
+        "autor",
     )
     list_filter = (
         "autor",
         "genero",
         "materia",
-
+        "tipo_libro",
     )
     ordering = (
         "titulo",
@@ -43,46 +47,10 @@ class LibroAdmin(admin.ModelAdmin):
         "titulo",
         "autor",
         "ubicacion",
-        "genero",
-        "numero_copias",
+        "tipo_libro",
     )
     date_hierarchy = "fecha_publicacion"
     actions = [generar_reporte_lista_libros_por_autor_pdf,generar_reporte_lista_libros_por_materia_pdf]
-
-@admin.register(LibroInfantil)
-class LibroInfantilAdmin(admin.ModelAdmin):
-    readonly_fields = ["factor_estancia","peso"]
-    list_display = (
-        "titulo",
-        "autor",
-        "ubicacion",
-        "ilustracioes",
-        "edad_minima",
-        "edad_maxima",
-    )
-    search_fields = (
-        "titulo",
-        "autor",
-    )
-    list_filter = ("autor",)
-    ordering = (
-        "titulo",
-        "autor",
-        "ubicacion",
-        "genero",
-        "numero_copias",
-    )
-    list_display_links = (
-        "titulo",
-        "autor",
-        "ubicacion",
-        "ilustracioes",
-        "edad_minima",
-        "edad_maxima",
-    )
-    date_hierarchy = "fecha_publicacion"
-    actions = [generar_reporte_lista_libros_por_autor_pdf,generar_reporte_lista_libros_por_materia_pdf]
-
 
 @admin.register(Revista)
 class RevistaAdmin(admin.ModelAdmin):

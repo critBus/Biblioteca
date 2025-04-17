@@ -60,10 +60,21 @@ NOMBRE_ROL_SUSCRIPTOR = "SUSCRIPTOR"
 NOMBRE_ROL_ADMINISTRADOR = "ADMINISTRADOR"
 
 
-class LibroAbstracto(models.Model):
+class Libro(models.Model):
     class Meta:
-        abstract = True
+        verbose_name = "Libro"
+        verbose_name_plural = "Libros"
 
+    TIPO_CHOICES = [
+        ('normal', 'Libro Normal'),
+        ('infantil', 'Libro Infantil')
+    ]
+    tipo_libro = models.CharField(
+        max_length=10,
+        choices=TIPO_CHOICES,
+        default='normal',
+        verbose_name="Tipo de Libro"
+    )
     factor_estancia = models.FloatField(default=0)
     peso = models.FloatField(default=0)
     titulo = models.CharField(
@@ -168,6 +179,23 @@ class LibroAbstracto(models.Model):
             MinValueValidator(0, )
         ],
     )
+    ilustraciones = models.BooleanField(default=False, verbose_name="Tiene Ilustraciones")
+    edad_minima = models.IntegerField(
+        verbose_name="Edad Mínima Recomendada",
+        null=True,
+        blank=True,
+        validators=[
+            MinValueValidator(1),
+        ],
+    )
+    edad_maxima = models.IntegerField(
+        verbose_name="Edad Máxima Recomendada",
+        null=True,
+        blank=True,
+        validators=[
+            MinValueValidator(1),
+        ],
+    )
 
     def clean(self):
         super().clean()
@@ -176,9 +204,6 @@ class LibroAbstracto(models.Model):
                 raise ValidationError(
                     "La fecha de Publicación debe ser inferior a la fecha de Adquisición "
                 )
-
-    def __str__(self):
-        return self.titulo
 
     def save(self, *args, **keyargs):
         es_nuevo = self.pk is None
@@ -189,12 +214,16 @@ class LibroAbstracto(models.Model):
             self.factor_estancia=(annos_publicados+1)/(annos_estancia+1)
 
         self.peso = self.cantidad_prestamo*self.factor_estancia
+        
+        # Aplicar factor de ilustraciones si es libro infantil
+        if self.tipo_libro == 'infantil' and self.ilustraciones:
+            self.factor_estancia *= 1.05
+            
         return super().save(*args, **keyargs)
 
-class Libro(LibroAbstracto):
-    class Meta:
-        verbose_name = "Libro"
-        verbose_name_plural = "Libros"
+    def __str__(self):
+        return self.titulo
+
 
 class Revista(models.Model):
     class Meta:
@@ -650,7 +679,7 @@ def calcular_libro_mes():
     for libro in libros:
         # Calcular peso basado en préstamos y lecturas del mes actual
         prestamos_mes = Prestamo.objects.filter(
-            libro=libro,
+            libro=libro,  # Buscar en ambos modelos
             fecha_prestamo__year=mes_actual.year,
             fecha_prestamo__month=mes_actual.month
         ).count()
@@ -694,7 +723,7 @@ class Inventario(models.Model):
         verbose_name = "Inventario"
         verbose_name_plural = "Inventarios"
 
-    fecha = models.DateField(
+    fecha = models.DateTimeField(
         verbose_name="Fecha", validators=[no_futuro], auto_now_add=True
     )
     libros = models.ManyToManyField(Libro)
@@ -713,36 +742,6 @@ class Lecturade_libro(models.Model):
     suscriptor = models.ForeignKey(Suscriptor, on_delete=models.CASCADE)
 
 
-class LibroInfantil(LibroAbstracto):
-    class Meta:
-        verbose_name = "Libro Infantil"
-        verbose_name_plural = "LIbros Infantiles"
-    ilustracioes = models.BooleanField(default=False)
-    edad_minima = models.IntegerField(
-        verbose_name="Edad Mínima Recomendada",
-        null=True,
-        blank=True,
-        validators=[
-            MinValueValidator(1),
-        ],
-    )
-    edad_maxima = models.IntegerField(
-        verbose_name="Edad Máxima Recomendada",
-        null=True,
-        blank=True,
-        validators=[
-            MinValueValidator(1),
-        ],
-    )
-
-    def save(self, *args, **keyargs):
-        es_nuevo = self.pk is None
-        response = super().save(*args, **keyargs)
-
-        if self.ilustracioes:
-            self.factor_estancia *= 1.05
-        return response
-
 class Prestamo(models.Model):
     class Meta:
         verbose_name = "Préstamo"
@@ -756,15 +755,13 @@ class Prestamo(models.Model):
     revista = models.ForeignKey(
         Revista, on_delete=models.CASCADE, null=True, blank=True
     )
-    libro_infantil = models.ForeignKey(LibroInfantil, on_delete=models.CASCADE, null=True, blank=True)
     suscriptor = models.ForeignKey(Suscriptor, on_delete=models.CASCADE,null=False, blank=False)
     devolucion = models.BooleanField(default=False)
     def get_peso(self):
         if self.libro:
             return self.libro.peso
-        if self.libro_infantil:
-            return self.libro_infantil.peso
-        return self.revista.peso
+        if self.revista:
+            return self.revista.peso
 
     def clean(self):
         super().clean()
