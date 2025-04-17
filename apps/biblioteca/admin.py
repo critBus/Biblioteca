@@ -446,6 +446,12 @@ class InventarioAdmin(admin.ModelAdmin):
     date_hierarchy = "fecha"
     filter_horizontal = ("libros", "revistas", "mobiliarios", "materiales_audiovisuales")
 
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['ultimo_inventario'] = Inventario.objects.order_by('-fecha').first()
+        print(extra_context['ultimo_inventario'])
+        return super().changelist_view(request, extra_context)
+
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
@@ -480,11 +486,6 @@ class InventarioAdmin(admin.ModelAdmin):
         
         return redirect('..')
 
-    def changelist_view(self, request, extra_context=None):
-        extra_context = extra_context or {}
-        extra_context['show_actualizar_button'] = True
-        return super().changelist_view(request, extra_context)
-
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = extra_context or {}
         obj = self.get_object(request, object_id)
@@ -493,6 +494,8 @@ class InventarioAdmin(admin.ModelAdmin):
             extra_context['revistas'] = obj.revistas.all()
             extra_context['mobiliarios'] = obj.mobiliarios.all()
             extra_context['materiales_audiovisuales'] = obj.materiales_audiovisuales.all()
+            extra_context['ultimo_inventario'] = Inventario.objects.order_by('-fecha').first()
+            print(extra_context['ultimo_inventario'])
         return super().change_view(request, object_id, form_url, extra_context=extra_context)
 
     def changelist_view(self, request, extra_context=None):
@@ -506,6 +509,8 @@ class InventarioAdmin(admin.ModelAdmin):
             extra_context['revistas'] = ultimo_inventario.revistas.all()
             extra_context['mobiliarios'] = ultimo_inventario.mobiliarios.all()
             extra_context['materiales_audiovisuales'] = ultimo_inventario.materiales_audiovisuales.all()
+            extra_context['ultimo_inventario'] = Inventario.objects.order_by('-fecha').first()
+            print(extra_context['ultimo_inventario'])
         return super().changelist_view(request, extra_context=extra_context)
 
     class Media:

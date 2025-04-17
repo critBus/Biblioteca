@@ -3,6 +3,13 @@
 
 {% block object-tools %}
     <div class="object-tools">
+        <div style="margin-bottom: 10px; background-color: #f8f9fa; padding: 10px; border-radius: 4px;">
+            {% if ultimo_inventario %}
+                <strong>Última actualización:</strong> {{ ultimo_inventario.fecha|date:"d/m/Y" }}
+            {% else %}
+                <strong>No hay actualizaciones previas</strong>
+            {% endif %}
+        </div>
         <a href="{% url 'admin:actualizar-inventario' %}" class="button btn  btn-high btn-success">
             Actualizar Inventario
         </a>
