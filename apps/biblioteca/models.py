@@ -910,6 +910,7 @@ class UsuariosEventuales(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
+        unique=True
     )
     fecha = models.DateField(verbose_name="Fecha de vencimiento", validators=[no_pasado])
 
@@ -957,6 +958,7 @@ class Archivo(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
+        unique=True
     )
     fecha_inicio = models.DateField(verbose_name="Fecha de inicio")
     fecha_fin = models.DateField(verbose_name="Fecha de fin")
