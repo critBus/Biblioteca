@@ -1,0 +1,25 @@
+{% extends "biblioteca/blank.html" %}
+
+{% block content %}
+
+
+<h2>Agregar Libro del Mes</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="libro">Libro</label>
+                <select class="form-control" id="libro" name="libro" required>
+                    {% for libro in form.libro.field.queryset %}
+                        <option value="{{ libro.id }}">{{ libro.titulo }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fecha">Fecha</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Agregar</button>
+            <a href="{% url 'tabla_libros_mes' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+
+{% endblock %}

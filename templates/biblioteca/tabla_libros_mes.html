@@ -1,0 +1,53 @@
+{% extends "biblioteca/blank.html" %}
+
+{% block content %}
+<h3>
+    Libros del Mes
+</h3>
+
+<a href="{% url 'agregar_libro_del_mes'  %}" class="btn btn-success btn-icon-split m-4 shadow-sm">
+                                        <span class="icon text-white-50">
+                                            <i class="fas fa-plus"></i>
+                                        </span>
+                                        <span class="text">Agregar</span>
+                                    </a>
+
+<table  class="table table-bordered shadow-sm" width="100%" cellspacing="0">
+    <thead>
+        <tr>
+            <th>
+                Libro
+            </th>
+             <th>
+                Fecha
+            </th>
+            <th>
+                Id
+            </th>
+            <th>
+                Accion
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for libro_mes in  libros %}
+        <tr>
+            <td>{{ libro_mes.libro }}</td>
+             <td>{{ libro_mes.fecha }}</td>
+             <td>{{ libro_mes.id }}</td>
+            <td>
+                <a href="{% url 'editar_libro_del_mes' libro_mes.id %}" class="btn btn-success btn-circle btn-sm mr-2">
+                                        <i class="fas fa-check"></i>
+                                    </a>
+
+                <a href="{% url 'delete_libro_mes' libro_mes.id  %}"  class="btn btn-danger btn-circle btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+            </td>
+
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

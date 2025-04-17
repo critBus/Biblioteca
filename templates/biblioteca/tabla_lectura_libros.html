@@ -1,0 +1,56 @@
+{% extends "biblioteca/blank.html" %}
+
+{% block content %}
+<h3>
+    Lectura de Libros
+</h3>
+
+<a href="{% url 'addusuarios_eventuales'  %}" class="btn btn-success btn-icon-split m-4 shadow-sm">
+                                        <span class="icon text-white-50">
+                                            <i class="fas fa-plus"></i>
+                                        </span>
+                                        <span class="text">Agregar</span>
+                                    </a>
+
+<table  class="table table-bordered shadow-sm" width="100%" cellspacing="0">
+    <thead>
+        <tr>
+            <th>
+                suscriptor
+            </th>
+             <th>
+                libro
+            </th>
+            <th>
+                fecha
+            </th>
+            <th>
+                Id
+            </th>
+            <th>
+                Accion
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for lectura in  lecturas %}
+        <tr>
+            <td>{{ lectura.suscriptor }}</td>
+            <td>{{ lectura.libro }}</td>
+             <td>{{ lectura.fecha }}</td>
+             <td>{{ lectura.id }}</td>
+            <td>
+                <a href="{% url editar_asistencia  lectura.id %}" class="btn btn-success btn-circle btn-sm mr-2">
+                                        <i class="fas fa-check"></i>
+                                    </a>
+                <a href="{% url 'delete_lectura_libros' lectura.id  %}"  class="btn btn-danger btn-circle btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+            </td>
+
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

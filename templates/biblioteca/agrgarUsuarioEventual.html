@@ -1,0 +1,29 @@
+{% extends "biblioteca/blank.html" %}
+
+{% block content %}
+<h3>
+    Agregar Usuarios Eventuales
+</h3>
+{% if  mensaje_de_error %}
+<h3 class="alert-danger">{{mensaje_de_error}}</h3>
+{% endif %}
+<form class="container-md d-flex g-lg-1 flex-column" method="post">
+ {% csrf_token %}
+    <label for="name">Nombre de Usuario Eventual</label>
+    <input id="name" itype="text" name="nombre" class="mb-4">
+
+
+
+    <label for="fecha" >Fecha</label>
+    <input id="fecha" type="date" name="fecha" class="form-control mb-4">
+
+
+<div class="mb-4"><label class="form-check-label" for="caduco">Caducó</label>
+      <input type="checkbox" name="caduco" id="caduco"></div>
+
+
+
+  <button type="submit" class="btn btn-primary">Adicionar Usuario Eventual</button>
+</form>
+
+{% endblock %}
