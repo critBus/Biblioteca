@@ -154,7 +154,7 @@ class MaterialAudiovisualAdmin(admin.ModelAdmin):
 
 
 @admin.register(Mobiliario)
-class Mobiliario(admin.ModelAdmin):
+class MobiliarioAdmin(admin.ModelAdmin):
     list_display = (
         "nombre_tipoMueble",
         "ubicacion",
@@ -184,7 +184,7 @@ class Mobiliario(admin.ModelAdmin):
 
 
 @admin.register(MuestrasMes)
-class MuestrasMes(admin.ModelAdmin):
+class MuestrasMesAdmin(admin.ModelAdmin):
     list_display = (
         "nombre_muestra",
         "autor",
@@ -212,7 +212,7 @@ class MuestrasMes(admin.ModelAdmin):
 
 
 @admin.register(Suscriptor)
-class Suscriptor(admin.ModelAdmin):
+class SuscriptorAdmin(admin.ModelAdmin):
     list_display = ("nombre", "ci", "direccion", "Telefono")
     search_fields = (
         "Telefono",
@@ -233,7 +233,7 @@ class Suscriptor(admin.ModelAdmin):
 
 
 @admin.register(LibrosDelMes)
-class LibrosDelMes(admin.ModelAdmin):
+class LibrosDelMesAdmin(admin.ModelAdmin):
     list_display = (
         "libro",
         "fecha",
@@ -291,7 +291,7 @@ class LibrosDelMes(admin.ModelAdmin):
 
 
 @admin.register(Concurso)
-class Concurso(admin.ModelAdmin):
+class ConcursoAdmin(admin.ModelAdmin):
     list_display = (
         "nombre",
         "modalidad",
@@ -324,7 +324,7 @@ def view_ci(obj):
     return obj.suscriptor.ci if obj.suscriptor else ""
 view_ci.short_description="CI"
 @admin.register(Prestamo)
-class Prestamo(admin.ModelAdmin):
+class PrestamoAdmin(admin.ModelAdmin):
     list_display = (
         "libro",
         "revista",
@@ -376,7 +376,7 @@ class Prestamo(admin.ModelAdmin):
 
 
 @admin.register(Lecturade_libro)
-class Lecturade_libro(admin.ModelAdmin):
+class Lecturade_libroAdmin(admin.ModelAdmin):
     list_display = (
         "fecha",
         "libro",
@@ -400,7 +400,7 @@ class Lecturade_libro(admin.ModelAdmin):
 
 
 @admin.register(Trabajador)
-class Trabajador(admin.ModelAdmin):
+class TrabajadorAdmin(admin.ModelAdmin):
     list_display = ("nombre", "expediente", "direccion", "Telefono")
     search_fields = (
         "Telefono",
@@ -446,6 +446,45 @@ class InventarioAdmin(admin.ModelAdmin):
     date_hierarchy = "fecha"
     filter_horizontal = ("libros", "revistas", "mobiliarios", "materiales_audiovisuales")
 
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                'actualizar_inventario/',
+                self.admin_site.admin_view(self.actualizar_inventario_view),
+                name='actualizar-inventario',
+            ),
+        ]
+        return custom_urls + urls
+
+    def actualizar_inventario_view(self, request):
+        try:
+            # Obtener todos los objetos
+            libros = Libro.objects.all()
+            revistas = Revista.objects.all()
+            mobiliarios = Mobiliario.objects.all()
+            materiales = MaterialAudiovisual.objects.all()
+
+            # Crear nuevo inventario
+            inventario = Inventario.objects.create()
+            
+            # Agregar todos los objetos al inventario
+            inventario.libros.set(libros)
+            inventario.revistas.set(revistas)
+            inventario.mobiliarios.set(mobiliarios)
+            inventario.materiales_audiovisuales.set(materiales)
+            
+            messages.success(request, 'Inventario actualizado exitosamente.')
+        except Exception as e:
+            messages.error(request, f'Error al actualizar el inventario: {str(e)}')
+        
+        return redirect('..')
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['show_actualizar_button'] = True
+        return super().changelist_view(request, extra_context)
+
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = extra_context or {}
         obj = self.get_object(request, object_id)
@@ -475,7 +514,7 @@ class InventarioAdmin(admin.ModelAdmin):
         }
 
 @admin.register(Asistencia)
-class Asistencia(admin.ModelAdmin):
+class AsistenciaAdmin(admin.ModelAdmin):
     list_display = ("fecha", "trabajador", "horas")
     search_fields = ("fecha",)
     list_filter = (
@@ -496,7 +535,7 @@ class Asistencia(admin.ModelAdmin):
 
 
 @admin.register(UsuariosEventuales)
-class UsuariosEventuales(admin.ModelAdmin):
+class UsuariosEventualesAdmin(admin.ModelAdmin):
     list_display = ("user", "fecha",)
     search_fields = ("fecha",)
     list_filter = ("fecha",)
@@ -509,7 +548,7 @@ class ConfiguracionBiblioAdmin(SingletonModelAdmin):
     pass
 
 @admin.register(Archivo)
-class Archivo(admin.ModelAdmin):
+class ArchivoAdmin(admin.ModelAdmin):
     list_display = ("user",)
     ordering = ("user",)
     list_display_links = ("user",)

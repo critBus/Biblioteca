@@ -1,8 +1,18 @@
 {% extends "admin/change_list.html" %}
 {% load static %}
 
+{% block object-tools %}
+    <div class="object-tools">
+        <a href="{% url 'admin:actualizar-inventario' %}" class="button btn  btn-high btn-success">
+            Actualizar Inventario
+        </a>
+    </div>
+{% endblock %}
+
 {% block content %}
+
 <div class="inventario-container">
+    
     <!-- Tabla de Libros -->
     <div class="inventario-section">
         <h2>Libros en Inventario</h2>
