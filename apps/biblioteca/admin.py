@@ -522,9 +522,12 @@ class ConfiguracionBiblioAdmin(SingletonModelAdmin):
 
 @admin.register(Archivo)
 class ArchivoAdmin(admin.ModelAdmin):
-    list_display = ("user",)
-    ordering = ("user",)
-    list_display_links = ("user",)
+    list_display = ("user", "fecha_inicio", "fecha_fin")
+    search_fields = ("user__username", "fecha_inicio", "fecha_fin")
+    list_filter = ("fecha_inicio", "fecha_fin")
+    ordering = ("-fecha_fin", "user")
+    list_display_links = ("user", "fecha_inicio", "fecha_fin")
+    date_hierarchy = "fecha_fin"
 
     def get_urls(self):
         urls = super().get_urls()
