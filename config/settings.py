@@ -140,6 +140,8 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Mensajes personalizados de autenticación
+LOGIN_ERROR_MESSAGE = "Credenciales incorrectas"
 
 # STATIC_URL = '/static/'
 # STATICFILES_DIRS = (BASE_DIR, 'static')

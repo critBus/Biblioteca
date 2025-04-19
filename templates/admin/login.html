@@ -1,8 +1,31 @@
 {% extends 'admin/login.html' %}
 
 {% block content %}
-  {{ block.super }}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+    {{ block.super }}
   <div class="form-row">
     <a href="{% url 'register' %}">Registrarse</a>
   </div>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  .alert {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+  }
+  .alert-error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+  }
+</style>
 {% endblock %}

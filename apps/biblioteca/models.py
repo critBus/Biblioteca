@@ -921,6 +921,9 @@ class UsuariosEventuales(models.Model):
             fecha_inicio=timezone.now().date() - timezone.timedelta(days=30),  # Estimación de fecha inicio (30 días antes)
             fecha_fin=self.fecha
         )
+        self.user.is_active = False
+        self.user.save()
+
         self.delete()
 
     @classmethod

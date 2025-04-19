@@ -10,8 +10,16 @@ from django.shortcuts import redirect
 from django.utils import timezone
 
 
-# @receiver(user_logged_in)
-# def check_user_condition(sender, request, user, **kwargs):
+@receiver(user_logged_in)
+def check_user_condition(sender, request, user, **kwargs):
+    pass
+    # from .models import Archivo
+    # if user:
+    #     # Si el usuario existe en el archivo histórico, no permitimos el login
+    #     if Archivo.objects.filter(user=user).exists():
+    #         return redirect("/login/")
+    
+    # return user
 #     from apps.biblioteca.models import UsuariosEventuales
 
 #     # Aquí puedes comprobar la condición que necesites

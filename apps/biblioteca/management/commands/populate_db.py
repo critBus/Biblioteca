@@ -21,9 +21,6 @@ class Command(BaseCommand):
         # Crear trabajadores
         self.create_trabajadores()
         
-        # Crear libros infantiles
-        self.create_libros_infantiles()
-        
         # Crear libros
         self.create_libros()
         
@@ -95,43 +92,17 @@ class Command(BaseCommand):
                 nivel_escolar=random.choice(["Primaria", "Secundaria", "Preuniversitario", "Universitario"])
             )
 
-    def create_libros_infantiles(self):
-        # Crear libros infantiles de prueba
-        generos = ["Ficcion", "No ficción", "Fantasía", "Aventura"]
-        estados = ["Bueno", "Regular", "Malo"]
-        
-        for _ in range(15):
-            LibroInfantil.objects.create(
-                titulo=fake.catch_phrase(),
-                editorial=fake.company(),
-                autor=fake.name(),
-                fecha_publicacion=fake.date_between(start_date='-5y', end_date='today'),
-                edicion=str(random.randint(1, 5)),
-                estado=random.choice(estados),
-                ubicacion=f"Estante Infantil {random.randint(1, 5)}",
-                descripcion=fake.text(max_nb_chars=200),
-                genero=random.choice(generos),
-                fecha_adquisicion=fake.date_between(start_date='-2y', end_date='today'),
-                numero_copias=random.randint(1, 8),
-                numero_serie=random.randint(1000, 9999),
-                materia="Infantil",
-                pais=fake.country(),
-                resumen=fake.text(max_nb_chars=200),
-                cantidad_prestamo=random.randint(0, 30),
-                cantidad_paginas=random.randint(20, 100),
-                peso=random.uniform(0.1, 1.0),
-                ilustracioes=random.choice([True, False]),
-                edad_minima=random.randint(3, 8),
-                edad_maxima=random.randint(9, 12)
-            )
-
     def create_libros(self):
-        # Crear libros de prueba
+        # Crear libros de prueba (incluyendo normales e infantiles)
         generos = ["Ficcion", "No ficción", "Ciencia ficción", "Fantasía", "Aventura", "Policíaca", "Romántico"]
         estados = ["Bueno", "Regular", "Malo"]
         
+        # Crear libros normales
         for _ in range(20):
             Libro.objects.create(
+                tipo_libro='normal',
+                factor_estancia=random.uniform(0.5, 2.0),
+                peso=random.uniform(0.2, 2.0),
                 titulo=fake.catch_phrase(),
                 editorial=fake.company(),
                 autor=fake.name(),
@@ -149,7 +120,35 @@ class Command(BaseCommand):
                 resumen=fake.text(max_nb_chars=200),
                 cantidad_prestamo=random.randint(0, 50),
                 cantidad_paginas=random.randint(50, 500),
-                peso=random.uniform(0.2, 2.0)
+                ilustraciones=False
+            )
+        
+        # Crear libros infantiles
+        for _ in range(15):
+            Libro.objects.create(
+                tipo_libro='infantil',
+                factor_estancia=random.uniform(0.3, 1.0),
+                peso=random.uniform(0.1, 1.0),
+                titulo=fake.catch_phrase(),
+                editorial=fake.company(),
+                autor=fake.name(),
+                fecha_publicacion=fake.date_between(start_date='-5y', end_date='today'),
+                edicion=str(random.randint(1, 5)),
+                estado=random.choice(estados),
+                ubicacion=f"Estante Infantil {random.randint(1, 5)}",
+                descripcion=fake.text(max_nb_chars=200),
+                genero=random.choice(["Ficcion", "Fantasía", "Aventura"]),
+                fecha_adquisicion=fake.date_between(start_date='-2y', end_date='today'),
+                numero_copias=random.randint(1, 8),
+                numero_serie=random.randint(1000, 9999),
+                materia="Infantil",
+                pais=fake.country(),
+                resumen=fake.text(max_nb_chars=200),
+                cantidad_prestamo=random.randint(0, 30),
+                cantidad_paginas=random.randint(20, 100),
+                ilustraciones=True,
+                edad_minima=random.randint(3, 8),
+                edad_maxima=random.randint(9, 12)
             )
 
     def create_revistas(self):
@@ -159,6 +158,8 @@ class Command(BaseCommand):
         
         for _ in range(15):
             Revista.objects.create(
+                factor_estancia=random.uniform(0.3, 1.5),
+                peso=random.uniform(0.1, 1.0),
                 nombre=fake.company(),
                 perioricidad=random.choice(periodicidades),
                 numero=str(random.randint(1, 100)),
@@ -172,8 +173,7 @@ class Command(BaseCommand):
                 fecha_adquisicion=fake.date_between(start_date='-2y', end_date='today'),
                 numero_copias=random.randint(1, 10),
                 numero_serie=str(random.randint(1000, 9999)),
-                cantidad_prestamo=random.randint(0, 30),
-                peso=random.uniform(0.1, 1.0)
+                cantidad_prestamo=random.randint(0, 30)
             )
 
     def create_material_audiovisual(self):
@@ -324,12 +324,13 @@ class Command(BaseCommand):
     def create_usuarios_eventuales(self):
         # Crear usuarios eventuales
         users = User.objects.all()
-        for _ in range(15):
+        for _ in range(4):
             user = random.choice(users)
-            UsuariosEventuales.objects.create(
-                user=user,
-                fecha=fake.date_between(start_date='-1m', end_date='+1m')
-            )
+            if user.username != 'admin' and not UsuariosEventuales.objects.filter(user=user).exists():
+                UsuariosEventuales.objects.create(
+                    user=user,
+                    fecha=fake.date_between(start_date='-1m', end_date='+1m')
+                )
 
     def create_libros_del_mes(self):
         # Crear libros del mes
