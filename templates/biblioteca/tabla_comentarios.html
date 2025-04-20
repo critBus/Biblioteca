@@ -1,0 +1,35 @@
+{% extends "biblioteca/blank.html" %}
+
+{% block content %}
+<h3>Comentarios y Puntuaciones de Libros</h3>
+
+<table class="table table-bordered shadow-sm" width="100%" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Libro</th>
+            <th>Suscriptor</th>
+            <th>Comentario</th>
+            <th>Puntuación</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for comentario in comentarios %}
+        <tr>
+            <td>{{ comentario.libro }}</td>
+            <td>{{ comentario.suscriptor }}</td>
+            <td>{{ comentario.comentario }}</td>
+            <td>{{ comentario.puntuacion }}</td>
+            <td>{{ comentario.fecha }}</td>
+            <td>
+                <a href="{% url 'agregar_comentario' comentario.libro.id %}" class="btn btn-primary btn-circle btn-sm mr-2">
+                    <i class="fas fa-edit"></i>
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

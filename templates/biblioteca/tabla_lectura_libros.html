@@ -40,14 +40,16 @@
              <td>{{ lectura.fecha }}</td>
              <td>{{ lectura.id }}</td>
             <td>
+                <a href="{% url 'agregar_comentario' lectura.libro.id %}" class="btn btn-primary btn-circle btn-sm mr-2" title="Comentar">
+                    <i class="fas fa-comment"></i>
+                </a>
                 <a href="" class="btn btn-success btn-circle btn-sm mr-2">
-                                        <i class="fas fa-check"></i>
-                                    </a>
+                    <i class="fas fa-check"></i>
+                </a>
                 <a href="{% url 'delete_lectura_libros' lectura.id  %}"  class="btn btn-danger btn-circle btn-sm">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
+                    <i class="fas fa-trash"></i>
+                </a>
             </td>
-
         </tr>
     {% endfor %}
     </tbody>

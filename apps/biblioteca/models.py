@@ -968,3 +968,27 @@ class Archivo(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.fecha_inicio} a {self.fecha_fin}"
+
+class ComentarioLibro(models.Model):
+    class Meta:
+        verbose_name = "Comentario de Libro"
+        verbose_name_plural = "Comentarios de Libros"
+        unique_together = ['libro', 'suscriptor']  # Evita comentarios duplicados del mismo usuario
+
+    libro = models.ForeignKey(Libro, on_delete=models.CASCADE, verbose_name="Libro")
+    suscriptor = models.ForeignKey(Suscriptor, on_delete=models.CASCADE, verbose_name="Suscriptor")
+    comentario = models.TextField(verbose_name="Comentario", validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ,.!¡¿?]+$")])
+    puntuacion = models.IntegerField(
+        verbose_name="Puntuación",
+        validators=[
+            MinValueValidator(1, message="La puntuación mínima es 1"),
+            MaxValueValidator(5, message="La puntuación máxima es 5")
+        ]
+    )
+    fecha = models.DateTimeField(verbose_name="Fecha", auto_now_add=True)
+
+    def __str__(self):
+        return f"Comentario de {self.suscriptor} en {self.libro}"
+
+    def clean(self):
+        super().clean()

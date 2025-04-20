@@ -265,3 +265,81 @@ def editar_libro_del_mes(request, libro_id):
     return render(request, 'biblioteca/editar_libro_del_mes.html', {'form': form,
                                                                     'libro_del_mes': libro_del_mes,
                                                                     'fecha':libro_del_mes.fecha.strftime('%Y-%m-%d')})
+
+class ComentarioLibroForm(forms.ModelForm):
+    class Meta:
+        model = ComentarioLibro
+        fields = ['comentario', 'puntuacion']
+        widgets = {
+            'comentario': forms.Textarea(attrs={'class': 'form-control'}),
+            'puntuacion': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 5}),
+        }
+
+def tabla_comentarios(request):
+    comentarios = ComentarioLibro.objects.all().order_by('-fecha')
+    datos = {
+        "comentarios": [{
+            "libro": comentario.libro.titulo,
+            "suscriptor": comentario.suscriptor.nombre,
+            "comentario": comentario.comentario,
+            "puntuacion": "★" * comentario.puntuacion,
+            "fecha": comentario.fecha.strftime('%Y-%m-%d %H:%M'),
+            "id": comentario.id,
+            "libro_id": comentario.libro.id
+        } for comentario in comentarios]
+    }
+    return render(request, "biblioteca/tabla_comentarios.html", datos)
+
+def agregar_comentario(request, libro_id):
+    print(f"libro_id {libro_id}")
+    libro = Libro.objects.filter(id=libro_id).first()
+    print(f"request.user {request.user.username}")
+    suscriptor = Suscriptor.objects.filter(user=request.user).first()
+    # libro = get_object_or_404(Libro, id=libro_id)
+    # suscriptor = get_object_or_404(Suscriptor, user=request.user)
+    
+    # Verificar si ya existe un comentario
+    comentario_existente = ComentarioLibro.objects.filter(libro=libro, suscriptor=suscriptor).first()
+    
+    if request.method == 'POST':
+        if comentario_existente:
+            form = ComentarioLibroForm(request.POST, instance=comentario_existente)
+        else:
+            form = ComentarioLibroForm(request.POST)
+            
+        if form.is_valid():
+            comentario = form.save(commit=False)
+            comentario.libro = libro
+            comentario.suscriptor = suscriptor
+            comentario.save()
+            return redirect('tabla_comentarios')
+    else:
+        if comentario_existente:
+            form = ComentarioLibroForm(instance=comentario_existente)
+        else:
+            form = ComentarioLibroForm()
+    
+    return render(request, "biblioteca/agregar_comentario.html", {
+        'form': form,
+        'libro': libro,
+        'suscriptor': suscriptor
+    })
+
+def tabla_prestamos(request):
+    prestamos = Prestamo.objects.all().order_by('-fecha_prestamo')
+    datos = {
+        "prestamos": [{
+            "suscriptor": prestamo.suscriptor.nombre,
+            "libro": prestamo.libro.titulo if prestamo.libro else prestamo.revista.nombre,
+            "fecha_prestamo": prestamo.fecha_prestamo.strftime('%Y-%m-%d'),
+            "fecha_entrega": prestamo.fecha_entrga.strftime('%Y-%m-%d'),
+            "devolucion": prestamo.devolucion,
+            "id": prestamo.id,
+            "libro_id": prestamo.libro.id if prestamo.libro else None
+        } for prestamo in prestamos]
+    }
+    return render(request, "biblioteca/tabla_prestamos.html", datos)
+
+def delete_prestamo(request, id):
+    Prestamo.objects.filter(id=id).delete()
+    return redirect('tabla_prestamos')

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,reverse
 from django.contrib import messages
 from django.shortcuts import redirect
 import traceback
@@ -181,7 +181,7 @@ class MuestrasMesAdmin(admin.ModelAdmin):
 
 @admin.register(Suscriptor)
 class SuscriptorAdmin(admin.ModelAdmin):
-    list_display = ("nombre", "ci", "direccion", "Telefono")
+    list_display = ("nombre", "ci", "direccion", "Telefono","user")
     search_fields = (
         "Telefono",
         "ci",
@@ -190,8 +190,8 @@ class SuscriptorAdmin(admin.ModelAdmin):
         "ci",
         "Telefono",
     )
-    ordering = ("nombre", "ci", "direccion", "Telefono")
-    list_display_links = ("nombre", "ci", "direccion", "Telefono")
+    ordering = ("nombre", "ci", "direccion", "Telefono","user")
+    list_display_links = ("nombre", "ci", "direccion", "Telefono","user")
 
     # def has_view_permission(self, request, obj=None):
     #     tiene_permiso= super().has_view_permission(request,obj)
@@ -293,12 +293,19 @@ def view_ci(obj):
 view_ci.short_description="CI"
 @admin.register(Prestamo)
 class PrestamoAdmin(admin.ModelAdmin):
+    def agregar_comentario_button(self,obj):
+        if obj.libro:
+            url = reverse("agregar_comentario",args=[obj.libro.id])
+            return mark_safe(f'<a class="button" href="{url}">Comentar</a>')
+        return ""
+    agregar_comentario_button.short_description = "Comentar"
     list_display = (
         "libro",
         "revista",
         "suscriptor",
         "devolucion",
-        view_ci
+        view_ci,
+        "agregar_comentario_button"
     )
     search_fields = (
         "fecha_prestamo",
@@ -343,12 +350,19 @@ class PrestamoAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
+
 @admin.register(Lecturade_libro)
 class Lecturade_libroAdmin(admin.ModelAdmin):
+    def agregar_comentario_button(self,obj):
+        if obj.libro:
+            return mark_safe(f'<a class="button" href="/biblioteca/agregar_comentario/{obj.libro.id}/">Comentar</a>')
+        return ""
+    agregar_comentario_button.short_description = "Comentar"
     list_display = (
         "fecha",
         "libro",
         "suscriptor",
+        "agregar_comentario_button"
     )
     search_fields = ("fecha",)
     list_filter = ("suscriptor",)
@@ -363,9 +377,31 @@ class Lecturade_libroAdmin(admin.ModelAdmin):
         "suscriptor",
     )
     date_hierarchy = "fecha"
-
     actions = [generar_reporte_expediente_lectura_pdf]
 
+@admin.register(ComentarioLibro)
+class ComentarioLibroAdmin(admin.ModelAdmin):
+    list_display = (
+        "libro",
+        "suscriptor",
+        "comentario",
+        "puntuacion",
+        "fecha"
+    )
+    search_fields = (
+        "libro__titulo",
+        "suscriptor__nombre",
+        "comentario"
+    )
+    list_filter = (
+        "puntuacion",
+        "fecha",
+        "libro",
+        "suscriptor"
+    )
+    ordering = ("-fecha",)
+    readonly_fields = ("fecha",)
+    date_hierarchy = "fecha"
 
 @admin.register(Trabajador)
 class TrabajadorAdmin(admin.ModelAdmin):
