@@ -312,7 +312,9 @@ def agregar_comentario(request, libro_id):
             comentario.libro = libro
             comentario.suscriptor = suscriptor
             comentario.save()
-            return redirect('tabla_comentarios')
+            # /admin/biblioteca/prestamo/
+            return HttpResponseRedirect("/admin/biblioteca/prestamo/")
+            
     else:
         if comentario_existente:
             form = ComentarioLibroForm(instance=comentario_existente)
