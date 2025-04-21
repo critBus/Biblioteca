@@ -1,4 +1,12 @@
-{% extends "biblioteca/blank.html" %}
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list jazzmin %}
+
+{% block extrahead %}
+    {{ block.super }}
+    {{ media.js }}
+{% endblock %}
+
+
 
 {% block content %}
 <div class="container">
