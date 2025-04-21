@@ -58,8 +58,7 @@ cover/
 # Django stuff:
 *.log
 local_settings.py
-db.sqlite3
-db.sqlite3-journal
+
 
 # Flask stuff:
 instance/
@@ -158,8 +157,11 @@ media
 .env.despliegue
 .env.dev
 myprojectenv/
-db.sqlite3
-*.sqlite3
+# db.sqlite3
+# *.sqlite3
 *.cpython-311
 __pycache__/
 __pycache__
+
+# db.sqlite3
+# db.sqlite3-journal
