@@ -142,16 +142,24 @@ def delete_usuario_eventual(request, id):
     return tabla_usuario_eventual(request)
 
 def tabla_lectura_libros(request):
-    lecturas=Lecturade_libro.objects.all()
-    datos={
-        "lecturas":[{
+    if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+        # Si es suscriptor, obtener el objeto Suscriptor relacionado
+        suscriptor = Suscriptor.objects.get(user=request.user)
+        # Filtrar solo las lecturas del suscriptor actual
+        lecturas = Lecturade_libro.objects.filter(suscriptor=suscriptor)
+    else:
+        # Si no es suscriptor, mostrar todas las lecturas (para bibliotecarios y administradores)
+        lecturas = Lecturade_libro.objects.all()
+    
+    datos = {
+        "lecturas": [{
             "suscriptor": lectura.suscriptor.nombre,
-            "libro" : lectura.libro.titulo,
-            "fecha":lectura.fecha.strftime('%Y-%m-%d'),
-            "id":lectura.id
+            "libro": lectura.libro.titulo,
+            "fecha": lectura.fecha.strftime('%Y-%m-%d'),
+            "id": lectura.id
         } for lectura in lecturas]
     }
-    return render(request, "biblioteca/tabla_lectura_libros.html",datos)
+    return render(request, "biblioteca/tabla_lectura_libros.html", datos)
 
 def delete_lectura_libros(request, id):
     Lecturade_libro.objects.filter(id=id).delete()
@@ -328,18 +336,43 @@ def agregar_comentario(request, libro_id):
     })
 
 def tabla_prestamos(request):
-    prestamos = PrestamoLibro.objects.all().order_by('-fecha_prestamo')
+    if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+        # Si es suscriptor, obtener el objeto Suscriptor relacionado
+        suscriptor = Suscriptor.objects.get(user=request.user)
+        # Filtrar solo los préstamos del suscriptor actual
+        prestamos_libros = PrestamoLibro.objects.filter(suscriptor=suscriptor)
+        prestamos_revistas = PrestamoRevista.objects.filter(suscriptor=suscriptor)
+    else:
+        # Si no es suscriptor, mostrar todos los préstamos (para bibliotecarios y administradores)
+        prestamos_libros = PrestamoLibro.objects.all()
+        prestamos_revistas = PrestamoRevista.objects.all()
+    
     datos = {
-        "prestamos": [{
+        "prestamos": []
+    }
+    
+    for prestamo in prestamos_libros:
+        datos["prestamos"].append({
+            "tipo": "Libro",
             "suscriptor": prestamo.suscriptor.nombre,
-            "libro": prestamo.libro.titulo if prestamo.libro else prestamo.revista.nombre,
+            "item": prestamo.libro.titulo if prestamo.libro else "",
             "fecha_prestamo": prestamo.fecha_prestamo.strftime('%Y-%m-%d'),
             "fecha_entrega": prestamo.fecha_entrga.strftime('%Y-%m-%d'),
-            "devolucion": prestamo.devolucion,
-            "id": prestamo.id,
-            "libro_id": prestamo.libro.id if prestamo.libro else None
-        } for prestamo in prestamos]
-    }
+            "devolucion": "Si" if prestamo.devolucion else "No",
+            "id": prestamo.id
+        })
+    
+    for prestamo in prestamos_revistas:
+        datos["prestamos"].append({
+            "tipo": "Revista",
+            "suscriptor": prestamo.suscriptor.nombre,
+            "item": prestamo.revista.nombre if prestamo.revista else "",
+            "fecha_prestamo": prestamo.fecha_prestamo.strftime('%Y-%m-%d'),
+            "fecha_entrega": prestamo.fecha_entrga.strftime('%Y-%m-%d'),
+            "devolucion": "Si" if prestamo.devolucion else "No",
+            "id": prestamo.id
+        })
+    
     return render(request, "biblioteca/tabla_prestamos.html", datos)
 
 def delete_prestamo(request, id):

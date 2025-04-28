@@ -327,6 +327,28 @@ class PrestamoLibroAdmin(admin.ModelAdmin):
     date_hierarchy = "fecha_prestamo"
     actions = [generar_reporte_prestamo_pdf,generar_reporte_lista_libros_por_prestramo_pdf]
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+            suscriptor = Suscriptor.objects.get(user=request.user)
+            return qs.filter(suscriptor=suscriptor)
+        return qs
+
+    def has_add_permission(self, request):
+        if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+            return False
+        return super().has_add_permission(request)
+
+    def has_change_permission(self, request, obj=None):
+        if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+            return False
+        return super().has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+            return False
+        return super().has_delete_permission(request, obj)
+
     def save_model(self, request, obj, form, change):
         # Validación de peso máximo antes de guardar
         if obj.suscriptor and hasattr(obj.suscriptor, 'get_peso_acumulado'):
@@ -348,7 +370,7 @@ class PrestamoLibroAdmin(admin.ModelAdmin):
                 self.message_user(request, f"El suscriptor excede el peso máximo permitido ({peso_maximo}). No se puede guardar el préstamo.", level=messages.ERROR)
                 return
         super().save_model(request, obj, form, change)
-
+@admin.register(PrestamoRevista)
 class PrestamoRevistaAdmin(admin.ModelAdmin):
     # def agregar_comentario_button(self,obj):
     #     if obj.libro:
@@ -361,7 +383,7 @@ class PrestamoRevistaAdmin(admin.ModelAdmin):
         "suscriptor",
         "devolucion",
         view_ci,
-        "agregar_comentario_button"
+        # "agregar_comentario_button"
     )
     search_fields = (
         "fecha_prestamo",
@@ -381,7 +403,28 @@ class PrestamoRevistaAdmin(admin.ModelAdmin):
         "suscriptor",
     )
     date_hierarchy = "fecha_prestamo"
-    # actions = [generar_reporte_prestamo_pdf,generar_reporte_lista_libros_por_prestramo_pdf]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+            suscriptor = Suscriptor.objects.get(user=request.user)
+            return qs.filter(suscriptor=suscriptor)
+        return qs
+
+    def has_add_permission(self, request):
+        if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+            return False
+        return super().has_add_permission(request)
+
+    def has_change_permission(self, request, obj=None):
+        if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+            return False
+        return super().has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+            return False
+        return super().has_delete_permission(request, obj)
 
     def save_model(self, request, obj, form, change):
         # Validación de peso máximo antes de guardar
@@ -410,7 +453,8 @@ class PrestamoRevistaAdmin(admin.ModelAdmin):
 class Lecturade_libroAdmin(admin.ModelAdmin):
     def agregar_comentario_button(self,obj):
         if obj.libro:
-            return mark_safe(f'<a class="button" href="/biblioteca/agregar_comentario/{obj.libro.id}/">Comentar</a>')
+            url = reverse("agregar_comentario",args=[obj.libro.id])
+            return mark_safe(f'<a class="button" href="{url}">Comentar</a>')
         return ""
     agregar_comentario_button.short_description = "Comentar"
     list_display = (
@@ -433,6 +477,29 @@ class Lecturade_libroAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "fecha"
     actions = [generar_reporte_expediente_lectura_pdf]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+            suscriptor = Suscriptor.objects.get(user=request.user)
+            return qs.filter(suscriptor=suscriptor)
+        return qs
+
+    def has_add_permission(self, request):
+        if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+            return False
+        return super().has_add_permission(request)
+
+    def has_change_permission(self, request, obj=None):
+        if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+            return False
+        return super().has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+            return False
+        return super().has_delete_permission(request, obj)
+
 
 @admin.register(ComentarioLibro)
 class ComentarioLibroAdmin(admin.ModelAdmin):
@@ -458,11 +525,29 @@ class ComentarioLibroAdmin(admin.ModelAdmin):
     readonly_fields = ("fecha",)
     date_hierarchy = "fecha"
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+            suscriptor = Suscriptor.objects.get(user=request.user)
+            return qs.filter(suscriptor=suscriptor)
+        return qs
+
     def has_add_permission(self, request):
-        return  False
+        return super().has_add_permission(request)
 
     def has_change_permission(self, request, obj=None):
-        return False
+        if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+            if obj is None:
+                return True
+            return obj.suscriptor.user == request.user
+        return super().has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.groups.filter(name=NOMBRE_ROL_SUSCRIPTOR).exists():
+            if obj is None:
+                return True
+            return obj.suscriptor.user == request.user
+        return super().has_delete_permission(request, obj)
 
 
 @admin.register(Trabajador)
