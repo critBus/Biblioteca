@@ -378,3 +378,60 @@ def tabla_prestamos(request):
 def delete_prestamo(request, id):
     PrestamoLibro.objects.filter(id=id).delete()
     return redirect('tabla_prestamos')
+
+from django.db.models import Count, Avg
+from django.contrib.auth.decorators import login_required
+
+def get_top_books(queryset, limit=5):
+    """Obtiene los mejores libros basados en puntuación y popularidad"""
+    return queryset.annotate(
+        avg_rating=Avg('comentariolibro__puntuacion'),
+        num_prestamos=Count('prestamolibro'),
+        num_lecturas=Count('lecturade_libro')
+    ).order_by('-avg_rating', '-num_prestamos', '-num_lecturas')[:limit]
+
+@login_required
+def asistente_recomendaciones(request):
+    if request.method == 'POST':
+        # Obtener respuestas del formulario
+        genero = request.POST.get('genero')
+        editorial = request.POST.get('editorial')
+        materia = request.POST.get('materia')
+        pais = request.POST.get('pais')
+        ilustraciones = request.POST.get('ilustraciones') == 'true'
+        
+        # Iniciar el queryset con todos los libros
+        libros = Libro.objects.all()
+        
+        # Aplicar filtros según las respuestas
+        if genero:
+            libros = libros.filter(genero=genero)
+        if editorial:
+            libros = libros.filter(editorial=editorial)
+        if materia:
+            libros = libros.filter(materia=materia)
+        if pais:
+            libros = libros.filter(pais=pais)
+        if ilustraciones is not None:
+            libros = libros.filter(ilustraciones=ilustraciones)
+        
+        # Obtener los mejores libros que coinciden con los filtros
+        libros_recomendados = get_top_books(libros)
+        
+        return render(request, 'biblioteca/resultados_recomendaciones.html', {
+            'libros': libros_recomendados
+        })
+    
+    # Si es GET, mostrar el formulario inicial
+    # Obtener opciones únicas para los filtros
+    generos = Libro.objects.values_list('genero', flat=True).distinct()
+    editoriales = Libro.objects.values_list('editorial', flat=True).distinct()
+    materias = Libro.objects.values_list('materia', flat=True).distinct()
+    paises = Libro.objects.values_list('pais', flat=True).distinct()
+    
+    return render(request, 'biblioteca/asistente_recomendaciones.html', {
+        'generos': generos,
+        'editoriales': editoriales,
+        'materias': materias,
+        'paises': paises
+    })
