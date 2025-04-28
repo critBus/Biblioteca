@@ -1,0 +1,63 @@
+{% extends 'biblioteca/asistente/base_asistente.html' %}
+
+{% block progress_percentage %}80%{% endblock %}
+{% block current_step %}4{% endblock %}
+
+{% block previous_selections %}
+<div class="alert alert-info mb-4">
+    <h6 class="alert-heading mb-1">Selecciones previas:</h6>
+    <p class="mb-0">
+        <strong>País:</strong> {{ pais_seleccionado }} |
+        <strong>Género:</strong> {{ genero_seleccionado }} |
+        <strong>Editorial:</strong> {{ editorial_seleccionada }}
+    </p>
+</div>
+{% endblock %}
+
+{% block question_title %}
+    ¿Qué materia o tema te interesa?
+{% endblock %}
+
+{% block question_content %}
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for materia in materias %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="materia" 
+                               id="materia_{{ forloop.counter }}" value="{{ materia }}" required>
+                        <label class="form-check-label w-100" for="materia_{{ forloop.counter }}">
+                            <h5 class="card-title mb-0">{{ materia }}</h5>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-warning" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                No hay materias disponibles para las selecciones realizadas.
+                <a href="{% url 'asistente_paso3' %}" class="alert-link">Selecciona otra editorial</a>.
+            </div>
+        </div>
+    {% endfor %}
+</div>
+<div class="invalid-feedback">
+    Por favor selecciona una materia.
+</div>
+{% endblock %}
+
+{% block back_url %}{% url 'asistente_paso3' %}{% endblock %}
+
+{% block navigation_buttons %}
+<div class="d-flex justify-content-between w-100">
+    <a href="{% url 'asistente_paso3' %}" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left me-2"></i>Anterior
+    </a>
+    <button type="submit" class="btn btn-primary" {% if not materias %}disabled{% endif %}>
+        Siguiente <i class="fas fa-arrow-right ms-2"></i>
+    </button>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'biblioteca/blank.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Asistente de Recomendaciones</h2>
+        </div>
+        <div class="card-body">
+            <!-- Barra de progreso -->
+            <div class="progress mb-4" style="height: 20px;">
+                <div class="progress-bar" role="progressbar" 
+                     style="width: {% block progress_percentage %}20%{% endblock %};" 
+                     aria-valuenow="{% block progress_step %}1{% endblock %}" 
+                     aria-valuemin="0" aria-valuemax="5">
+                    Paso {% block current_step %}1{% endblock %} de 5
+                </div>
+            </div>
+
+            <!-- Resumen de selecciones previas -->
+            {% block previous_selections %}{% endblock %}
+
+            <!-- Pregunta actual -->
+            <div class="mb-4">
+                <h3 class="mb-3">{% block question_title %}{% endblock %}</h3>
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    {% block question_content %}{% endblock %}
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        {% block navigation_buttons %}
+                            {% if not forloop.first %}
+                                <a href="{% block back_url %}{% endblock %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-arrow-left me-2"></i>Anterior
+                                </a>
+                            {% endif %}
+                            <button type="submit" class="btn btn-primary">
+                                {% block next_button_text %}Siguiente{% endblock %}
+                                <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        {% endblock %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Validación del formulario
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+})()
+</script>
+{% endblock %}

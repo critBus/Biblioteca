@@ -391,47 +391,162 @@ def get_top_books(queryset, limit=5):
     ).order_by('-avg_rating', '-num_prestamos', '-num_lecturas')[:limit]
 
 @login_required
-def asistente_recomendaciones(request):
+def asistente_paso1(request):
+    """Primera pregunta: País de origen"""
+    # Obtener países únicos que tienen libros
+    paises = Libro.objects.values_list('pais', flat=True).distinct().exclude(pais='')
+    
     if request.method == 'POST':
-        # Obtener respuestas del formulario
-        genero = request.POST.get('genero')
-        editorial = request.POST.get('editorial')
-        materia = request.POST.get('materia')
         pais = request.POST.get('pais')
-        ilustraciones = request.POST.get('ilustraciones') == 'true'
-        
-        # Iniciar el queryset con todos los libros
-        libros = Libro.objects.all()
-        
-        # Aplicar filtros según las respuestas
-        if genero:
-            libros = libros.filter(genero=genero)
-        if editorial:
-            libros = libros.filter(editorial=editorial)
-        if materia:
-            libros = libros.filter(materia=materia)
         if pais:
-            libros = libros.filter(pais=pais)
-        if ilustraciones is not None:
-            libros = libros.filter(ilustraciones=ilustraciones)
-        
-        # Obtener los mejores libros que coinciden con los filtros
-        libros_recomendados = get_top_books(libros)
-        
-        return render(request, 'biblioteca/resultados_recomendaciones.html', {
-            'libros': libros_recomendados
-        })
+            # Guardar selección en sesión
+            request.session['filtro_pais'] = pais
+            return redirect('asistente_paso2')
     
-    # Si es GET, mostrar el formulario inicial
-    # Obtener opciones únicas para los filtros
-    generos = Libro.objects.values_list('genero', flat=True).distinct()
-    editoriales = Libro.objects.values_list('editorial', flat=True).distinct()
-    materias = Libro.objects.values_list('materia', flat=True).distinct()
-    paises = Libro.objects.values_list('pais', flat=True).distinct()
-    
-    return render(request, 'biblioteca/asistente_recomendaciones.html', {
-        'generos': generos,
-        'editoriales': editoriales,
-        'materias': materias,
+    return render(request, 'biblioteca/asistente/paso1.html', {
         'paises': paises
+    })
+
+@login_required
+def asistente_paso2(request):
+    """Segunda pregunta: Género literario"""
+    pais = request.session.get('filtro_pais')
+    if not pais:
+        return redirect('asistente_paso1')
+    
+    # Obtener géneros disponibles para el país seleccionado
+    generos = Libro.objects.filter(pais=pais).values_list('genero', flat=True).distinct().exclude(genero='')
+    
+    if request.method == 'POST':
+        genero = request.POST.get('genero')
+        if genero:
+            request.session['filtro_genero'] = genero
+            return redirect('asistente_paso3')
+    
+    return render(request, 'biblioteca/asistente/paso2.html', {
+        'generos': generos,
+        'pais_seleccionado': pais
+    })
+
+@login_required
+def asistente_paso3(request):
+    """Tercera pregunta: Editorial"""
+    pais = request.session.get('filtro_pais')
+    genero = request.session.get('filtro_genero')
+    if not (pais and genero):
+        return redirect('asistente_paso1')
+    
+    # Obtener editoriales disponibles según filtros previos
+    editoriales = Libro.objects.filter(
+        pais=pais,
+        genero=genero
+    ).values_list('editorial', flat=True).distinct().exclude(editorial='')
+    
+    if request.method == 'POST':
+        editorial = request.POST.get('editorial')
+        if editorial:
+            request.session['filtro_editorial'] = editorial
+            return redirect('asistente_paso4')
+    
+    return render(request, 'biblioteca/asistente/paso3.html', {
+        'editoriales': editoriales,
+        'pais_seleccionado': pais,
+        'genero_seleccionado': genero
+    })
+
+@login_required
+def asistente_paso4(request):
+    """Cuarta pregunta: Materia/Tema"""
+    pais = request.session.get('filtro_pais')
+    genero = request.session.get('filtro_genero')
+    editorial = request.session.get('filtro_editorial')
+    if not (pais and genero and editorial):
+        return redirect('asistente_paso1')
+    
+    # Obtener materias disponibles según filtros previos
+    materias = Libro.objects.filter(
+        pais=pais,
+        genero=genero,
+        editorial=editorial
+    ).values_list('materia', flat=True).distinct().exclude(materia='')
+    
+    if request.method == 'POST':
+        materia = request.POST.get('materia')
+        if materia:
+            request.session['filtro_materia'] = materia
+            return redirect('asistente_paso5')
+    
+    return render(request, 'biblioteca/asistente/paso4.html', {
+        'materias': materias,
+        'pais_seleccionado': pais,
+        'genero_seleccionado': genero,
+        'editorial_seleccionada': editorial
+    })
+
+@login_required
+def asistente_paso5(request):
+    """Quinta pregunta: Ilustraciones"""
+    pais = request.session.get('filtro_pais')
+    genero = request.session.get('filtro_genero')
+    editorial = request.session.get('filtro_editorial')
+    materia = request.session.get('filtro_materia')
+    if not (pais and genero and editorial and materia):
+        return redirect('asistente_paso1')
+    
+    if request.method == 'POST':
+        ilustraciones = request.POST.get('ilustraciones')
+        if ilustraciones in ['true', 'false', '']:
+            request.session['filtro_ilustraciones'] = ilustraciones
+            return redirect('resultados_recomendaciones')
+    
+    return render(request, 'biblioteca/asistente/paso5.html', {
+        'pais_seleccionado': pais,
+        'genero_seleccionado': genero,
+        'editorial_seleccionada': editorial,
+        'materia_seleccionada': materia
+    })
+
+@login_required
+def resultados_recomendaciones(request):
+    """Muestra los resultados finales basados en todos los filtros"""
+    # Recuperar todos los filtros de la sesión
+    filtros = {
+        'pais': request.session.get('filtro_pais'),
+        'genero': request.session.get('filtro_genero'),
+        'editorial': request.session.get('filtro_editorial'),
+        'materia': request.session.get('filtro_materia'),
+        'ilustraciones': request.session.get('filtro_ilustraciones')
+    }
+    
+    # Verificar que tengamos todos los filtros necesarios
+    if not all([filtros['pais'], filtros['genero'], filtros['editorial'], filtros['materia']]):
+        return redirect('asistente_paso1')
+    
+    # Construir el queryset base
+    libros = Libro.objects.filter(
+        pais=filtros['pais'],
+        genero=filtros['genero'],
+        editorial=filtros['editorial'],
+        materia=filtros['materia']
+    )
+    
+    # Aplicar filtro de ilustraciones si se especificó
+    if filtros['ilustraciones'] in ['true', 'false']:
+        libros = libros.filter(ilustraciones=filtros['ilustraciones'] == 'true')
+    
+    # Obtener los mejores libros según puntuación y popularidad
+    libros_recomendados = libros.annotate(
+        avg_rating=Avg('comentariolibro__puntuacion'),
+        num_prestamos=Count('prestamolibro'),
+        num_lecturas=Count('lecturade_libro')
+    ).order_by('-avg_rating', '-num_prestamos', '-num_lecturas')
+    
+    # Limpiar los filtros de la sesión
+    for key in list(request.session.keys()):
+        if key.startswith('filtro_'):
+            del request.session[key]
+    
+    return render(request, 'biblioteca/asistente/resultados.html', {
+        'libros': libros_recomendados,
+        'filtros': filtros
     })
