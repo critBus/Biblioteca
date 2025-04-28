@@ -64,11 +64,9 @@
                                 <div class="card-footer bg-transparent">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="text-warning">
-                                            {% with ''|center:libro.avg_rating|floatformat:0 as range %}
-                                                {% for _ in range %}
+                                            {% for _ in libro.avg_rating %}
                                                     <i class="fas fa-star"></i>
                                                 {% endfor %}
-                                            {% endwith %}
                                             <small class="text-muted ms-1">({{ libro.avg_rating|floatformat:1 }})</small>
                                         </div>
                                         <div>
