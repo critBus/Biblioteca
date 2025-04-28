@@ -247,7 +247,7 @@ class Command(BaseCommand):
             
             tipo_material = random.choice(['libro', 'revista'])
             if tipo_material == 'libro':
-                Prestamo.objects.create(
+                PrestamoLibro.objects.create(
                     fecha_prestamo=fecha_prestamo,
                     fecha_entrga=fecha_entrega,
                     libro=random.choice(libros),
@@ -255,7 +255,7 @@ class Command(BaseCommand):
                     devolucion=random.choice([True, False])
                 )
             else:
-                Prestamo.objects.create(
+                PrestamoLibro.objects.create(
                     fecha_prestamo=fecha_prestamo,
                     fecha_entrga=fecha_entrega,
                     revista=random.choice(revistas),

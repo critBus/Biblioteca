@@ -638,7 +638,7 @@ class Suscriptor(models.Model):
         validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
     )
     def get_peso_acumulado(self):
-        prestamos=Prestamo.objects.filter(suscriptor=self,devolucion=False,fecha_entrga__lt=datetime.datetime.now().date())
+        prestamos=PrestamoLibro.objects.filter(suscriptor=self, devolucion=False, fecha_entrga__lt=datetime.datetime.now().date())
         peso_total=0
         for prestamo in prestamos:
             peso_total+=prestamo.get_peso()
@@ -678,7 +678,7 @@ def calcular_libro_mes():
 
     for libro in libros:
         # Calcular peso basado en préstamos y lecturas del mes actual
-        prestamos_mes = Prestamo.objects.filter(
+        prestamos_mes = PrestamoLibro.objects.filter(
             libro=libro,  # Buscar en ambos modelos
             fecha_prestamo__year=mes_actual.year,
             fecha_prestamo__month=mes_actual.month
@@ -742,26 +742,23 @@ class Lecturade_libro(models.Model):
     suscriptor = models.ForeignKey(Suscriptor, on_delete=models.CASCADE)
 
 
-class Prestamo(models.Model):
+class PrestamoLibro(models.Model):
     class Meta:
-        verbose_name = "Préstamo"
-        verbose_name_plural = "Préstamos"
+        verbose_name = "Préstamo de Libro"
+        verbose_name_plural = "Préstamos de Libros"
 
     fecha_prestamo = models.DateField(
         verbose_name="Fecha de Préstamo", validators=[no_futuro]
     )
     fecha_entrga = models.DateField(verbose_name="Fecha de Entrega")
     libro = models.ForeignKey(Libro, on_delete=models.CASCADE, null=True, blank=True)
-    revista = models.ForeignKey(
-        Revista, on_delete=models.CASCADE, null=True, blank=True
-    )
     suscriptor = models.ForeignKey(Suscriptor, on_delete=models.CASCADE,null=False, blank=False)
     devolucion = models.BooleanField(default=False)
     def get_peso(self):
         if self.libro:
             return self.libro.peso
-        if self.revista:
-            return self.revista.peso
+        # if self.revista:
+        #     return self.revista.peso
 
     def clean(self):
         super().clean()
@@ -782,11 +779,42 @@ class Prestamo(models.Model):
             if self.libro:
                 self.libro.cantidad_prestamo += 1
                 self.libro.save()
+            # if self.revista:
+            #     self.revista.cantidad_prestamo += 1
+            #     self.revista.save()
+        return super().save(*args, **keyargs)
+
+class PrestamoRevista(models.Model):
+    class Meta:
+        verbose_name = "Préstamo de Revistas"
+        verbose_name_plural = "Préstamos de Revistas"
+
+    fecha_prestamo = models.DateField(
+        verbose_name="Fecha de Préstamo", validators=[no_futuro]
+    )
+    fecha_entrga = models.DateField(verbose_name="Fecha de Entrega")
+    revista = models.ForeignKey(Revista, on_delete=models.CASCADE, null=True, blank=True)
+    suscriptor = models.ForeignKey(Suscriptor, on_delete=models.CASCADE,null=False, blank=False)
+    devolucion = models.BooleanField(default=False)
+
+    def get_peso(self):
+        if self.revista:
+            return self.revista.peso
+
+    def clean(self):
+        super().clean()
+        if self.fecha_entrga and self.fecha_prestamo:
+            if self.fecha_entrga <= self.fecha_prestamo:
+                raise ValidationError(
+                    "La fecha de Préstamo debe ser inferior a la fecha de Entrega "
+                )
+    def save(self, *args, **keyargs):
+        es_nuevo = self.pk is None
+        if es_nuevo:
             if self.revista:
                 self.revista.cantidad_prestamo += 1
                 self.revista.save()
         return super().save(*args, **keyargs)
-
 
 class Concurso(models.Model):
     class Meta:
@@ -992,3 +1020,31 @@ class ComentarioLibro(models.Model):
 
     def clean(self):
         super().clean()
+
+
+class ArchivoEntrada(models.Model):
+    class Meta:
+        verbose_name = "Archivo de Entrada y Salida"
+        verbose_name_plural = "Archivos de Entradas y Salidas"
+
+    nombre = models.CharField(
+        max_length=256,
+        verbose_name="Nombre",
+        validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
+    )
+    apellido = models.CharField(
+        max_length=256,
+        verbose_name="Apellido",
+        validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
+    )
+    ci = models.IntegerField(
+        verbose_name="CI",
+        validators=[
+            length_validation_11,
+            RegexValidator(r"^[0-9]{11}$"),
+            not_empty_validation,
+        ],
+    )
+    horaentrada = models.DateTimeField(verbose_name="Hora de Entrada")
+    horasalida = models.DateTimeField(verbose_name="Hora de Salida")
+

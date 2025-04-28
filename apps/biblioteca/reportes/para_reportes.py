@@ -71,7 +71,7 @@ def generar_reporte_expediente_lectura_pdf(modeladmin, request, queryset):
 
 
 def generar_reporte_prestamo_pdf(modeladmin, request, queryset):
-    entidades: List[Prestamo] = queryset
+    entidades: List[PrestamoLibro] = queryset
     lista = []
     for entidad in entidades:
         lista.append(
@@ -148,7 +148,7 @@ def generar_reporte_lista_libros_por_materia_pdf(modeladmin, request, queryset):
         "Listado de Libros por Materia", data, file="reporte", send_email=True
     )
 def generar_reporte_lista_libros_por_prestramo_pdf(modeladmin, request, queryset):
-    entidades: List[Prestamo] = queryset
+    entidades: List[PrestamoLibro] = queryset
     lista = []
     for entidad in entidades:
         if entidad.libro:

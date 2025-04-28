@@ -328,7 +328,7 @@ def agregar_comentario(request, libro_id):
     })
 
 def tabla_prestamos(request):
-    prestamos = Prestamo.objects.all().order_by('-fecha_prestamo')
+    prestamos = PrestamoLibro.objects.all().order_by('-fecha_prestamo')
     datos = {
         "prestamos": [{
             "suscriptor": prestamo.suscriptor.nombre,
@@ -343,5 +343,5 @@ def tabla_prestamos(request):
     return render(request, "biblioteca/tabla_prestamos.html", datos)
 
 def delete_prestamo(request, id):
-    Prestamo.objects.filter(id=id).delete()
+    PrestamoLibro.objects.filter(id=id).delete()
     return redirect('tabla_prestamos')

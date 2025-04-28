@@ -291,8 +291,9 @@ class ConcursoAdmin(admin.ModelAdmin):
 def view_ci(obj):
     return obj.suscriptor.ci if obj.suscriptor else ""
 view_ci.short_description="CI"
-@admin.register(Prestamo)
-class PrestamoAdmin(admin.ModelAdmin):
+
+@admin.register(PrestamoLibro)
+class PrestamoLibroAdmin(admin.ModelAdmin):
     def agregar_comentario_button(self,obj):
         if obj.libro:
             url = reverse("agregar_comentario",args=[obj.libro.id])
@@ -301,7 +302,6 @@ class PrestamoAdmin(admin.ModelAdmin):
     agregar_comentario_button.short_description = "Comentar"
     list_display = (
         "libro",
-        "revista",
         "suscriptor",
         "devolucion",
         view_ci,
@@ -349,6 +349,61 @@ class PrestamoAdmin(admin.ModelAdmin):
                 return
         super().save_model(request, obj, form, change)
 
+class PrestamoRevistaAdmin(admin.ModelAdmin):
+    # def agregar_comentario_button(self,obj):
+    #     if obj.libro:
+    #         url = reverse("agregar_comentario",args=[obj.libro.id])
+    #         return mark_safe(f'<a class="button" href="{url}">Comentar</a>')
+    #     return ""
+    # agregar_comentario_button.short_description = "Comentar"
+    list_display = (
+        "revista",
+        "suscriptor",
+        "devolucion",
+        view_ci,
+        "agregar_comentario_button"
+    )
+    search_fields = (
+        "fecha_prestamo",
+        "fecha_entrga",
+        "suscriptor__ci"
+    )
+    list_filter = ("suscriptor",)
+    ordering = (
+        "fecha_prestamo",
+        "fecha_entrga",
+        "revista",
+        "suscriptor",
+        "devolucion",
+    )
+    list_display_links = (
+        "revista",
+        "suscriptor",
+    )
+    date_hierarchy = "fecha_prestamo"
+    # actions = [generar_reporte_prestamo_pdf,generar_reporte_lista_libros_por_prestramo_pdf]
+
+    def save_model(self, request, obj, form, change):
+        # Validación de peso máximo antes de guardar
+        if obj.suscriptor and hasattr(obj.suscriptor, 'get_peso_acumulado'):
+            peso_actual = obj.suscriptor.get_peso_acumulado()
+            # Sumar el peso del nuevo préstamo
+            if hasattr(obj, 'get_peso'):
+                peso_actual += obj.get_peso()
+            try:
+                conf=ConfiguracionBiblio.objects.first()
+                if conf:
+                    print(conf)
+                    peso_maximo = conf.peso_maximo
+                else:
+                    peso_maximo=0
+            except Exception:
+                print(traceback.format_exc())
+                peso_maximo = 0
+            if peso_actual > peso_maximo:
+                self.message_user(request, f"El suscriptor excede el peso máximo permitido ({peso_maximo}). No se puede guardar el préstamo.", level=messages.ERROR)
+                return
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(Lecturade_libro)
@@ -402,6 +457,13 @@ class ComentarioLibroAdmin(admin.ModelAdmin):
     ordering = ("-fecha",)
     readonly_fields = ("fecha",)
     date_hierarchy = "fecha"
+
+    def has_add_permission(self, request):
+        return  False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
 
 @admin.register(Trabajador)
 class TrabajadorAdmin(admin.ModelAdmin):
@@ -588,3 +650,13 @@ class ArchivoAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+
+
+@admin.register(ArchivoEntrada)
+class ArchivoEntradaAdmin(admin.ModelAdmin):
+    list_display = ("nombre", "apellido", "horaentrada", "horasalida")
+    search_fields = ("nombre", "apellido", "ci")
+    list_filter = ("ci", )
+    ordering = ("-horaentrada", )
+    list_display_links = ("nombre", "apellido", "horaentrada", "horasalida")
+    date_hierarchy = "horaentrada"
