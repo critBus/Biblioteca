@@ -553,7 +553,7 @@ def resultados_recomendaciones(request):
         'filtros': filtros
     })
 
-class LibroDigitalDetailView(TemplateView):
+class LibroDigitalDetailView(DetailView):
     model = LibroDigital
     template_name = 'biblioteca/libro_digital_detail.html'
     context_object_name = 'libro'

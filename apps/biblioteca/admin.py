@@ -755,6 +755,7 @@ class LibroDigitalAdmin(admin.ModelAdmin):
         "genero",
         "edad_minima",
         "edad_maxima",
+        "leer_libro_button",
     )
     search_fields = (
         "titulo",
@@ -771,3 +772,14 @@ class LibroDigitalAdmin(admin.ModelAdmin):
         "autor",
     )
     date_hierarchy = "fecha_subida"
+
+    def leer_libro_button(self, obj):
+        from django.utils.html import format_html
+        from django.urls import reverse
+        url = reverse('libro_digital_detail', args=[obj.pk])
+        return format_html(
+            '<a class="button" href="{}" target="_blank">Leer Libro</a>',
+            url
+        )
+    leer_libro_button.short_description = "Acciones"
+    leer_libro_button.allow_tags = True
