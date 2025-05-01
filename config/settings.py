@@ -196,6 +196,15 @@ JAZZMIN_SETTINGS = {
 
         },
     ],
+
+    "custom_links": {
+        "biblioteca": [{
+            "name": "Asistente de Rcomendaciones", 
+            "url": "/asistente/paso1", 
+            "icon": "fas fa-eye-dropper",  # Cambiado a gotero
+            # "permissions":["reportbroD.view_reportrequest"]
+        }]
+    },
     # "order_with_respect_to": [
     #     "users",
     #     "auth",
