@@ -9,6 +9,8 @@ import datetime
 from django.contrib.auth.models import  Group
 from django.core.exceptions import ObjectDoesNotExist
 from .models import *
+from django.http import HttpResponse
+from django.views.generic import DetailView, TemplateView
 
 User=get_user_model()
 
@@ -550,3 +552,15 @@ def resultados_recomendaciones(request):
         'libros': libros_recomendados,
         'filtros': filtros
     })
+
+class LibroDigitalDetailView(TemplateView):
+    model = LibroDigital
+    template_name = 'biblioteca/libro_digital_detail.html'
+    context_object_name = 'libro'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['pdf_url'] = self.object.archivo_pdf.url
+        context['pdf']=self.object.archivo_pdf
+        print(context['pdf'].url)
+        return context

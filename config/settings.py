@@ -244,3 +244,4 @@ DJANGO_SUPERUSER_LAST_NAME = os.environ.get("DJANGO_SUPERUSER_LAST_NAME")
 #     "theme": "darkly",
 #     "dark_mode_theme": "darkly",
 # }
+X_FRAME_OPTIONS = 'SAMEORIGIN'

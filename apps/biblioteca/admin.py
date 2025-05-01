@@ -745,3 +745,29 @@ class ArchivoEntradaAdmin(admin.ModelAdmin):
     ordering = ("-horaentrada", )
     list_display_links = ("nombre", "apellido", "horaentrada", "horasalida")
     date_hierarchy = "horaentrada"
+
+@admin.register(LibroDigital)
+class LibroDigitalAdmin(admin.ModelAdmin):
+    list_display = (
+        "titulo",
+        "autor",
+        "fecha_subida",
+        "genero",
+        "edad_minima",
+        "edad_maxima",
+    )
+    search_fields = (
+        "titulo",
+        "autor",
+        "descripcion",
+    )
+    list_filter = (
+        "genero",
+        "fecha_subida",
+    )
+    ordering = (
+        "-fecha_subida",
+        "titulo",
+        "autor",
+    )
+    date_hierarchy = "fecha_subida"

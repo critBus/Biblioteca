@@ -1048,3 +1048,69 @@ class ArchivoEntrada(models.Model):
     horaentrada = models.DateTimeField(verbose_name="Hora de Entrada")
     horasalida = models.DateTimeField(verbose_name="Hora de Salida")
 
+
+class LibroDigital(models.Model):
+    class Meta:
+        verbose_name = "Libro Digital"
+        verbose_name_plural = "Libros Digitales"
+
+    titulo = models.CharField(
+        max_length=256,
+        verbose_name="Título",
+        validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
+    )
+    autor = models.CharField(
+        max_length=256,
+        verbose_name="Autor",
+        validators=[RegexValidator(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")],
+    )
+    archivo_pdf = models.FileField(
+        upload_to='libros_digitales/',
+        verbose_name="Archivo PDF",
+        help_text="Sube el archivo PDF del libro"
+    )
+    fecha_subida = models.DateTimeField(
+        verbose_name="Fecha de Subida",
+        auto_now_add=True
+    )
+    descripcion = models.TextField(
+        verbose_name="Descripción",
+        validators=[RegexValidator(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ ,.!¡¿?]+$")],
+        null=True,
+        blank=True
+    )
+    genero = models.CharField(
+        max_length=256,
+        verbose_name="Género",
+        null=True,
+        blank=True,
+        choices=[
+            ("Ficcion", "Ficcion"),
+            ("No ficción", "No ficción"),
+            ("Ciencia ficción", "Ciencia ficción"),
+            ("Fantasía", "Fantasía"),
+            ("Aventura", "Aventura"),
+            ("Policíaca", "Policíaca"),
+            ("Romántico", "Romántico"),
+        ],
+    )
+    edad_minima = models.IntegerField(
+        verbose_name="Edad Mínima Recomendada",
+        null=True,
+        blank=True,
+        validators=[
+            MinValueValidator(1),
+        ],
+    )
+    edad_maxima = models.IntegerField(
+        verbose_name="Edad Máxima Recomendada",
+        null=True,
+        blank=True,
+        validators=[
+            MinValueValidator(1),
+        ],
+    )
+
+    def __str__(self):
+        return self.titulo
+
