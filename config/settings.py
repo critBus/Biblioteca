@@ -159,23 +159,14 @@ AUTHENTICATION_BACKENDS = [
 JAZZMIN_SETTINGS = {
     "custom_index": "admin/index.html",
     "welcome_sign": "Bienvenido",
-    # title of the window (Will default to current_admin_site.site_title if absent or None)
     "site_title": "Biblioteca",
-    # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
     "site_header": "Biblioteca",
-    # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
     "site_brand": "Biblioteca",
-    # Logo to use for your site, must be present in static files, used for brand on top left
     "site_logo": "img/logo.png",
-    # Logo to use for your site, must be present in static files, used for login form logo (defaults to site_logo)
     "login_logo": "img/logo.png",
-    # Logo to use for login form in dark themes (defaults to login_logo)
     "login_logo_dark": "img/logo.png",
-    # CSS classes that are applied to the logo above
     "site_logo_classes": "",
-    # Links to put along the top menu
     "topmenu_links": [
-        # Url that gets reversed (Permissions can be added)
         {
             "name": "Plantillas Reportes",
             "url": "/reportbroD",
@@ -190,26 +181,49 @@ JAZZMIN_SETTINGS = {
                 "reportbroD.add_reportdefinition",
             ],
         },
-        {
-            # "name": "Plantillas",
-            # "url": "/usuarios_eventuales/",
-
-        },
     ],
-
     "custom_links": {
         "biblioteca": [{
             "name": "Asistente de Rcomendaciones", 
             "url": "/asistente/paso1", 
-            "icon": "fas fa-eye-dropper",  # Cambiado a gotero
-            # "permissions":["reportbroD.view_reportrequest"]
+            "icon": "fas fa-robot",
         }]
+    },
+    "show_ui_builder": True,
+    "navigation_expanded": True,
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "users.User": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "auth.Permission": "fas fa-key",
+        "biblioteca.Archivo": "fas fa-archive",
+        "biblioteca.ArchivoEntrada": "fas fa-door-open",
+        "biblioteca.Asistencia": "fas fa-user-check",
+        "biblioteca.AsistenteRecomendaciones": "fas fa-robot",
+        "biblioteca.ComentarioLibro": "fas fa-comment",
+        "biblioteca.Concurso": "fas fa-trophy",
+        "biblioteca.ConfiguracionBiblio": "fas fa-cog",
+        "biblioteca.Inventario": "fas fa-boxes",
+        "biblioteca.Lecturade_libro": "fas fa-book-reader",
+        "biblioteca.Libro": "fas fa-book",
+        "biblioteca.LibroDigital": "fas fa-file-pdf",
+        "biblioteca.LibrosDelMes": "fas fa-star",
+        "biblioteca.MaterialAudiovisual": "fas fa-film",
+        "biblioteca.Mobiliario": "fas fa-chair",
+        "biblioteca.MuestrasMes": "fas fa-images",
+        "biblioteca.PrestamoLibro": "fas fa-hand-holding",
+        "biblioteca.PrestamoRevista": "fas fa-hand-holding",
+        "biblioteca.Revista": "fas fa-newspaper",
+        "biblioteca.Suscriptor": "fas fa-id-card",
+        "biblioteca.Trabajador": "fas fa-user-tie",
+        "biblioteca.UsuariosEventuales": "fas fa-user-clock",
     },
     "order_with_respect_to": [
         "auth",
         "biblioteca.Archivo",
         "biblioteca.ArchivoEntrada",
         "biblioteca.Asistencia",
+        "biblioteca.AsistenteRecomendaciones",
         "biblioteca.ComentarioLibro",
         "biblioteca.Concurso",
         "biblioteca.ConfiguracionBiblio",
@@ -229,35 +243,6 @@ JAZZMIN_SETTINGS = {
         "biblioteca.UsuariosEventuales",
         "users",
     ],
-    # # for the full list of 5.13.0 free icon classes
-    "icons": {
-        "auth": "fas fa-users-cog",
-        "users.User": "fas fa-user",
-        "auth.Group": "fas fa-users",
-        "auth.Permission": "fas fa-key",
-        "biblioteca.Libro": "fas fa-book",
-        "biblioteca.Revista": "fas fa-newspaper",
-        "biblioteca.MaterialAudiovisual": "fas fa-film",
-        "biblioteca.Mobiliario": "fas fa-chair",
-        "biblioteca.MuestrasMes": "fas fa-images",
-        "biblioteca.Suscriptor": "fas fa-user-tag",
-        "biblioteca.LibrosDelMes": "fas fa-calendar-book",
-        "biblioteca.Concurso": "fas fa-trophy",
-        "biblioteca.Trabajador": "fas fa-user-tie",
-        "biblioteca.Asistencia": "fas fa-clipboard-check",
-        "biblioteca.UsuariosEventuales": "fas fa-user-clock",
-        "biblioteca.ConfiguracionBiblio": "fas fa-cog",
-        "biblioteca.Archivo": "fas fa-archive",
-        "biblioteca.ArchivoEntrada": "fas fa-sign-in-alt",
-        "biblioteca.LibroDigital": "fas fa-book-reader",
-        "biblioteca.Inventario": "fas fa-clipboard-list",
-        "biblioteca.Lecturade_libro": "fas fa-book-open",
-        "biblioteca.PrestamoLibro": "fas fa-book-medical",
-        "biblioteca.PrestamoRevista": "fas fa-newspaper",
-        "biblioteca.ComentarioLibro": "fas fa-comment-dots",
-    },
-    # Icons that are used when one is not manually specified
-    # "default_icon_parents": "fas fa-chevron-circle-right",
 }
 JAZZMIN_UI_TWEAKS = {
     "theme": "default",

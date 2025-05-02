@@ -323,7 +323,7 @@ def agregar_comentario(request, libro_id):
             comentario.suscriptor = suscriptor
             comentario.save()
             # /admin/biblioteca/prestamo/
-            return HttpResponseRedirect("/admin/biblioteca/prestamo/")
+            return HttpResponseRedirect("/admin/biblioteca/comentariolibro/")
             
     else:
         if comentario_existente:
