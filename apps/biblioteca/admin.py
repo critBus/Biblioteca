@@ -51,6 +51,10 @@ class LibroAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "fecha_publicacion"
     actions = [generar_reporte_lista_libros_por_autor_pdf,generar_reporte_lista_libros_por_materia_pdf]
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
 
 @admin.register(Revista)
 class RevistaAdmin(admin.ModelAdmin):
@@ -84,6 +88,10 @@ class RevistaAdmin(admin.ModelAdmin):
         "editorial",
         "numero_copias",
     )
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
 
 
 @admin.register(MaterialAudiovisual)
@@ -119,6 +127,10 @@ class MaterialAudiovisualAdmin(admin.ModelAdmin):
         "productora",
         "numero_copias",
     )
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
 
 
 @admin.register(Mobiliario)
@@ -149,6 +161,10 @@ class MobiliarioAdmin(admin.ModelAdmin):
         "costo_adqisicion",
         "cantidad",
     )
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
 
 
 @admin.register(MuestrasMes)
@@ -177,6 +193,10 @@ class MuestrasMesAdmin(admin.ModelAdmin):
         "direccion",
     )
     date_hierarchy = "fecha_inicio"
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
 
 
 @admin.register(Suscriptor)
@@ -192,6 +212,10 @@ class SuscriptorAdmin(admin.ModelAdmin):
     )
     ordering = ("nombre", "ci", "direccion", "Telefono","user")
     list_display_links = ("nombre", "ci", "direccion", "Telefono","user")
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
 
     # def has_view_permission(self, request, obj=None):
     #     tiene_permiso= super().has_view_permission(request,obj)
@@ -257,6 +281,10 @@ class LibrosDelMesAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
 
 @admin.register(Concurso)
 class ConcursoAdmin(admin.ModelAdmin):
@@ -287,6 +315,10 @@ class ConcursoAdmin(admin.ModelAdmin):
         "fecha_cierre",
     )
     date_hierarchy = "fecha_inicio"
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
 
 def view_ci(obj):
     return obj.suscriptor.ci if obj.suscriptor else ""
@@ -370,6 +402,11 @@ class PrestamoLibroAdmin(admin.ModelAdmin):
                 self.message_user(request, f"El suscriptor excede el peso máximo permitido ({peso_maximo}). No se puede guardar el préstamo.", level=messages.ERROR)
                 return
         super().save_model(request, obj, form, change)
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
+
 @admin.register(PrestamoRevista)
 class PrestamoRevistaAdmin(admin.ModelAdmin):
     # def agregar_comentario_button(self,obj):
@@ -447,6 +484,10 @@ class PrestamoRevistaAdmin(admin.ModelAdmin):
                 self.message_user(request, f"El suscriptor excede el peso máximo permitido ({peso_maximo}). No se puede guardar el préstamo.", level=messages.ERROR)
                 return
         super().save_model(request, obj, form, change)
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
 
 
 @admin.register(Lecturade_libro)
@@ -500,6 +541,11 @@ class Lecturade_libroAdmin(admin.ModelAdmin):
             return False
         return super().has_delete_permission(request, obj)
 
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
+
 
 @admin.register(ComentarioLibro)
 class ComentarioLibroAdmin(admin.ModelAdmin):
@@ -549,6 +595,11 @@ class ComentarioLibroAdmin(admin.ModelAdmin):
             return obj.suscriptor.user == request.user
         return super().has_delete_permission(request, obj)
 
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
+
 
 @admin.register(Trabajador)
 class TrabajadorAdmin(admin.ModelAdmin):
@@ -563,6 +614,10 @@ class TrabajadorAdmin(admin.ModelAdmin):
     )
     ordering = ("nombre", "expediente", "direccion", "Telefono")
     list_display_links = ("nombre", "expediente", "direccion", "Telefono")
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
 
 
 def libros_view(obj):
@@ -666,7 +721,7 @@ class InventarioAdmin(admin.ModelAdmin):
 
     class Media:
         css = {
-            'all': ('css/inventario_admin.css',)
+            'all': ('css/admin_custom.css',)
         }
 
 @admin.register(Asistencia)
@@ -688,6 +743,10 @@ class AsistenciaAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "fecha"
     actions = [generar_reporte_informe_asistencia_pdf]
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
 
 
 @admin.register(UsuariosEventuales)
@@ -698,10 +757,17 @@ class UsuariosEventualesAdmin(admin.ModelAdmin):
     ordering = ("fecha",)
     list_display_links = ("user", "fecha",)
     date_hierarchy = "fecha"
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
 
 @admin.register(ConfiguracionBiblio)
 class ConfiguracionBiblioAdmin(SingletonModelAdmin):
-    pass
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
 
 @admin.register(Archivo)
 class ArchivoAdmin(admin.ModelAdmin):
@@ -736,6 +802,10 @@ class ArchivoAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
 
 @admin.register(ArchivoEntrada)
 class ArchivoEntradaAdmin(admin.ModelAdmin):
@@ -745,6 +815,10 @@ class ArchivoEntradaAdmin(admin.ModelAdmin):
     ordering = ("-horaentrada", )
     list_display_links = ("nombre", "apellido", "horaentrada", "horasalida")
     date_hierarchy = "horaentrada"
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
 
 @admin.register(LibroDigital)
 class LibroDigitalAdmin(admin.ModelAdmin):
@@ -771,3 +845,7 @@ class LibroDigitalAdmin(admin.ModelAdmin):
         "autor",
     )
     date_hierarchy = "fecha_subida"
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
