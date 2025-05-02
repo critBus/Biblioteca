@@ -63,6 +63,15 @@ class Command(BaseCommand):
         # Crear configuración
         self.create_configuracion()
         
+        # Crear libros digitales
+        self.create_libros_digitales()
+        
+        # Crear comentarios de libros
+        self.create_comentarios_libros()
+        
+        # Crear archivos de entrada
+        self.create_archivos_entrada()
+        
         self.stdout.write(self.style.SUCCESS('Datos de prueba creados exitosamente'))
 
     def create_users(self):
@@ -255,7 +264,7 @@ class Command(BaseCommand):
                     devolucion=random.choice([True, False])
                 )
             else:
-                PrestamoLibro.objects.create(
+                PrestamoRevista.objects.create(
                     fecha_prestamo=fecha_prestamo,
                     fecha_entrga=fecha_entrega,
                     revista=random.choice(revistas),
@@ -365,4 +374,49 @@ class Command(BaseCommand):
         if not ConfiguracionBiblio.objects.exists():
             ConfiguracionBiblio.objects.create(
                 peso_maximo=10.0  # 10 kg como peso máximo por defecto
+            )
+
+    def create_libros_digitales(self):
+        # Crear libros digitales de prueba
+        generos = ["Ficcion", "No ficción", "Ciencia ficción", "Fantasía", "Aventura", "Policíaca", "Romántico"]
+        
+        for _ in range(10):
+            LibroDigital.objects.create(
+                titulo=fake.catch_phrase(),
+                autor=fake.name(),
+                descripcion=fake.text(max_nb_chars=200),
+                genero=random.choice(generos),
+                edad_minima=random.randint(3, 12),
+                edad_maxima=random.randint(13, 18)
+            )
+
+    def create_comentarios_libros(self):
+        # Crear comentarios de libros
+        suscriptores = list(Suscriptor.objects.all())
+        libros = list(Libro.objects.all())
+        
+        # Crear combinaciones únicas de suscriptor-libro
+        for _ in range(min(30, len(suscriptores) * len(libros))):
+            suscriptor = random.choice(suscriptores)
+            libro = random.choice(libros)
+            
+            # Verificar si ya existe un comentario para esta combinación
+            if not ComentarioLibro.objects.filter(libro=libro, suscriptor=suscriptor).exists():
+                ComentarioLibro.objects.create(
+                    libro=libro,
+                    suscriptor=suscriptor,
+                    comentario=fake.text(max_nb_chars=200),
+                    puntuacion=random.randint(1, 5)
+                )
+
+    def create_archivos_entrada(self):
+        # Crear archivos de entrada
+        for _ in range(20):
+            hora_entrada = fake.date_time_between(start_date='-1d', end_date='now')
+            ArchivoEntrada.objects.create(
+                nombre=fake.first_name(),
+                apellido=fake.last_name(),
+                ci=random.randint(10000000000, 99999999999),
+                horaentrada=hora_entrada,
+                horasalida=hora_entrada + timedelta(hours=random.randint(1, 8))
             )
