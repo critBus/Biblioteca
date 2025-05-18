@@ -29,8 +29,12 @@
                         <i class="fas fa-images fa-3x text-primary"></i>
                     </div>
                     <div class="form-check">
+                        {% if cantidad_con_ilustraciones > 0 %}
                         <input class="form-check-input" type="radio" name="ilustraciones" 
                                id="ilustracionesSi" value="true" required>
+                        {% else %}
+                        No Hay
+                        {% endif %}
                         <label class="form-check-label" for="ilustracionesSi">
                             <h5 class="mb-0">Sí, me gustan las ilustraciones</h5>
                         </label>
@@ -44,8 +48,13 @@
                         <i class="fas fa-book fa-3x text-secondary"></i>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="ilustraciones" 
+                        {% if cantidad_sin_ilustraciones > 0 %}
+                        <input class="form-check-input" type="radio" name="ilustraciones"
                                id="ilustracionesNo" value="false">
+                        {% else %}
+                        No Hay
+                        {% endif %}
+
                         <label class="form-check-label" for="ilustracionesNo">
                             <h5 class="mb-0">No, prefiero sin ilustraciones</h5>
                         </label>

@@ -500,12 +500,31 @@ def asistente_paso5(request):
         if ilustraciones in ['true', 'false', '']:
             request.session['filtro_ilustraciones'] = ilustraciones
             return redirect('resultados_recomendaciones')
-    
+    # Construir el queryset base
+    cantidad_sin_ilustraciones = Libro.objects.filter(
+        pais=pais,
+        genero=genero,
+        editorial=editorial,
+        materia=materia,
+        ilustraciones=False
+    ).count()
+
+    cantidad_con_ilustraciones = Libro.objects.filter(
+        pais=pais,
+        genero=genero,
+        editorial=editorial,
+        materia=materia,
+        ilustraciones=True
+    ).count()
+
+
     return render(request, 'biblioteca/asistente/paso5.html', {
         'pais_seleccionado': pais,
         'genero_seleccionado': genero,
         'editorial_seleccionada': editorial,
-        'materia_seleccionada': materia
+        'materia_seleccionada': materia,
+        "cantidad_sin_ilustraciones": cantidad_sin_ilustraciones,
+        "cantidad_con_ilustraciones": cantidad_con_ilustraciones,
     })
 
 @login_required
@@ -542,7 +561,7 @@ def resultados_recomendaciones(request):
         num_prestamos=Count('prestamolibro'),
         num_lecturas=Count('lecturade_libro')
     ).order_by('-avg_rating', '-num_prestamos', '-num_lecturas')
-    
+    rankings=[int(libro.avg_rating) for libro in libros_recomendados]
     # Limpiar los filtros de la sesión
     for key in list(request.session.keys()):
         if key.startswith('filtro_'):
@@ -550,7 +569,8 @@ def resultados_recomendaciones(request):
     
     return render(request, 'biblioteca/asistente/resultados.html', {
         'libros': libros_recomendados,
-        'filtros': filtros
+        'filtros': filtros,
+        "rankings":rankings
     })
 
 class LibroDigitalDetailView(DetailView):

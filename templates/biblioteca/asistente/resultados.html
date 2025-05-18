@@ -1,4 +1,4 @@
-{% extends 'biblioteca/blank.html' %}
+{% extends 'biblioteca/asistente/base_asistente.html' %}
 {% load static %}
 
 {% block content %}
@@ -64,7 +64,7 @@
                                 <div class="card-footer bg-transparent">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="text-warning">
-                                            {% for _ in libro.avg_rating %}
+                                            {% for _ in rankings %}
                                                     <i class="fas fa-star"></i>
                                                 {% endfor %}
                                             <small class="text-muted ms-1">({{ libro.avg_rating|floatformat:1 }})</small>
