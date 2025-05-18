@@ -68,6 +68,9 @@
     .view-toggle {
         margin: 20px;
         text-align: right;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
     }
     .view-toggle a {
         padding: 8px 15px;
@@ -79,11 +82,20 @@
     .view-toggle a:hover {
         background: #295570;
     }
+    .add-button {
+        background: #28a745 !important;
+    }
+    .add-button:hover {
+        background: #218838 !important;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="btn btn-high btn-success">
+<div class="view-toggle">
+    <a href="{% url 'admin:biblioteca_libro_add' %}" class="add-button">
+        <i class="fas fa-plus"></i> Agregar Libro
+    </a>
     <a href="/admin/biblioteca/libro/" style="color:white;">Ver como tabla</a>
 </div>
 
