@@ -6,6 +6,7 @@ import traceback
 # Register your models here.
 from django.utils.safestring import mark_safe
 from solo.admin import SingletonModelAdmin
+from django.shortcuts import render
 
 from apps.biblioteca.models import *
 from .reportes.para_reportes import *
@@ -51,10 +52,38 @@ class LibroAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "fecha_publicacion"
     actions = [generar_reporte_lista_libros_por_autor_pdf,generar_reporte_lista_libros_por_materia_pdf]
+
+    def get_list_display(self, request):
+        if request.GET.get('view') == 'cards':
+            return None
+        return super().get_list_display(request)
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        if request.GET.get('view') == 'cards':
+            extra_context['show_cards'] = True
+            extra_context['libros'] = self.get_queryset(request)
+        return super().changelist_view(request, extra_context)
+
     class Media:
         css = {
             'all': ('css/admin_custom.css',)
         }
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('cards/', self.admin_site.admin_view(self.cards_view), name='libro-cards'),
+        ]
+        return custom_urls + urls
+
+    def cards_view(self, request):
+        context = {
+            'libros': self.get_queryset(request),
+            'title': 'Vista de Tarjetas - Libros',
+            'opts': self.model._meta,
+        }
+        return render(request, 'admin/biblioteca/libro/cards.html', context)
 
 @admin.register(Revista)
 class RevistaAdmin(admin.ModelAdmin):

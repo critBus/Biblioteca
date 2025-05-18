@@ -196,6 +196,7 @@ class Libro(models.Model):
             MinValueValidator(1),
         ],
     )
+    portada = models.ImageField(upload_to='portadas/', null=True, blank=True)
 
     def clean(self):
         super().clean()

@@ -187,7 +187,13 @@ JAZZMIN_SETTINGS = {
             "name": "Asistente de Rcomendaciones", 
             "url": "/asistente/paso1", 
             "icon": "fas fa-robot",
-        }]
+        }
+        # ,{
+        #     "name": "Libros Disponibles", 
+        #     "url": "/admin/biblioteca/libro/cards/", 
+        #     "icon": "fas fa-book",
+        # }
+        ]
     },
     "show_ui_builder": True,
     "navigation_expanded": True,
