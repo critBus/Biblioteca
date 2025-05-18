@@ -702,21 +702,37 @@ def calcular_libro_mes():
 
     if libro_mas_popular:
         # Actualizar o crear el libro del mes
-        libro_mes, created = LibrosDelMes.objects.get_or_create(
+        libro_mes=LibrosDelMes.objects.filter(
             fecha__year=mes_actual.year,
             fecha__month=mes_actual.month,
-            defaults={
-                'libro': libro_mas_popular,
-                'fecha': fecha_actual  # Usar la fecha actual en lugar del primer día del mes
-            }
-        )
-        
-        if not created:
+            ).first()
+        if libro_mes:
             libro_mes.libro = libro_mas_popular
             libro_mes.fecha = fecha_actual  # Actualizar la fecha al día actual
             libro_mes.save()
+            return libro_mes
+        else:
+            libro_mes = LibrosDelMes.objects.create(
+                fecha=fecha_actual,
+                libro=libro_mas_popular,
+                )
+            return libro_mes
 
-        return libro_mes
+        # libro_mes, created = LibrosDelMes.objects.get_or_create(
+        #     fecha__year=mes_actual.year,
+        #     fecha__month=mes_actual.month,
+        #     defaults={
+        #         'libro': libro_mas_popular,
+        #         'fecha': fecha_actual  # Usar la fecha actual en lugar del primer día del mes
+        #     }
+        # )
+        #
+        # if not created:
+        #     libro_mes.libro = libro_mas_popular
+        #     libro_mes.fecha = fecha_actual  # Actualizar la fecha al día actual
+        #     libro_mes.save()
+        #
+        # return libro_mes
     return None
 class Inventario(models.Model):
     class Meta:
