@@ -33,4 +33,5 @@ urlpatterns = [
     path('tabla_prestamos/', tabla_prestamos, name='tabla_prestamos'),
     path('delete_prestamo/<int:id>/', delete_prestamo, name='delete_prestamo'),
     path('libro-digital/<int:pk>/', LibroDigitalDetailView.as_view(), name='libro_digital_detail'),
+    path('mis-datos/', mis_datos, name='mis_datos'),
 ]

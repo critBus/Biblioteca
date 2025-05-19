@@ -593,3 +593,36 @@ class LibroDigitalDetailView(DetailView):
         context['pdf']=self.object.archivo_pdf
         print(context['pdf'].url)
         return context
+
+def mis_datos(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    try:
+        suscriptor = Suscriptor.objects.get(user=request.user)
+        datos = {
+             **admin.site.each_context(request),
+            'suscriptor': {
+                'nombre': suscriptor.nombre,
+                'edad': suscriptor.edad,
+                'sexo': suscriptor.sexo,
+                'telefono': suscriptor.Telefono,
+                'ci': suscriptor.ci,
+                'centro_trabajo': suscriptor.centro_trabajo,
+                'ocupacion': suscriptor.ocupacion,
+                'direccion': suscriptor.direccion,
+                'sindicato': 'Sí' if suscriptor.sindicato else 'No',
+                'nivel_escolar': suscriptor.nivel_escolar,
+            },
+            'usuario': {
+                'username': request.user.username,
+                'email': request.user.email,
+                'first_name': request.user.first_name,
+                'last_name': request.user.last_name,
+                # 'date_joined': request.user.date_joined.strftime('%Y-%m-%d'),
+                # 'last_login': request.user.last_login.strftime('%Y-%m-%d %H:%M') if request.user.last_login else 'Nunca',
+            }
+        }
+        return render(request, "biblioteca/mis_datos.html", datos)
+    except Suscriptor.DoesNotExist:
+        return HttpResponse("No se encontró información del suscriptor", status=404)

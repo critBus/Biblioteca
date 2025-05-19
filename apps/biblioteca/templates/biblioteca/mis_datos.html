@@ -1,0 +1,111 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Mis Datos Personales</h2>
+    
+    <div class="row">
+        <!-- Información del Suscriptor -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Información Personal</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Nombre:</th>
+                                <td>{{ suscriptor.nombre }}</td>
+                            </tr>
+                            <tr>
+                                <th>Edad:</th>
+                                <td>{{ suscriptor.edad }}</td>
+                            </tr>
+                            <tr>
+                                <th>Sexo:</th>
+                                <td>{{ suscriptor.sexo }}</td>
+                            </tr>
+                            <tr>
+                                <th>Teléfono:</th>
+                                <td>{{ suscriptor.telefono }}</td>
+                            </tr>
+                            <tr>
+                                <th>CI:</th>
+                                <td>{{ suscriptor.ci }}</td>
+                            </tr>
+                            <tr>
+                                <th>Centro de Trabajo/Estudio:</th>
+                                <td>{{ suscriptor.centro_trabajo|default:"No especificado" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Ocupación:</th>
+                                <td>{{ suscriptor.ocupacion|default:"No especificada" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Dirección:</th>
+                                <td>{{ suscriptor.direccion }}</td>
+                            </tr>
+                            <tr>
+                                <th>Sindicato:</th>
+                                <td>{{ suscriptor.sindicato }}</td>
+                            </tr>
+                            <tr>
+                                <th>Nivel Escolar:</th>
+                                <td>{{ suscriptor.nivel_escolar }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información del Usuario -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Información de la Cuenta</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Nombre de Usuario:</th>
+                                <td>{{ usuario.username }}</td>
+                            </tr>
+                            <tr>
+                                <th>Correo Electrónico:</th>
+                                <td>{{ usuario.email|default:"No especificado" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Nombre:</th>
+                                <td>{{ usuario.first_name|default:"No especificado" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Apellidos:</th>
+                                <td>{{ usuario.last_name|default:"No especificado" }}</td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .table th {
+        width: 40%;
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %} 
