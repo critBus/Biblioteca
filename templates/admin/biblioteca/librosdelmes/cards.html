@@ -88,10 +88,26 @@
     .add-button:hover {
         background: #218838 !important;
     }
+    .page-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #417690;
+    }
+    .book-card-date {
+        color: #417690;
+        font-size: 0.9em;
+        margin-bottom: 10px;
+        font-style: italic;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
+<h1 class="page-title">Libros del Mes</h1>
+
 <div class="view-toggle">
     <!-- <a href="{% url 'admin:biblioteca_librosdelmes_add' %}" style="color:white;" class="add-button">
         <i class="fas fa-plus"></i> Agregar Libro
@@ -100,7 +116,7 @@
 </div>
 
 <div class="book-cards">
-    {% for libro in libros %}
+    {% for libro in libros|dictsortreversed:"fecha" %}
     <div class="book-card">
         {% if libro.libro.portada %}
             <img src="{{ libro.libro.portada.url }}" alt="{{ libro.libro.titulo }}" class="book-card-image">
@@ -112,6 +128,7 @@
         <div class="book-card-content">
             <div class="book-card-title">{{ libro.libro.titulo }}</div>
             <div class="book-card-author">{{ libro.libro.autor }}</div>
+            <div class="book-card-date">Seleccionado el: {{ libro.fecha|date:"d/m/Y" }}</div>
             <div class="book-card-description">{{ libro.libro.descripcion|truncatewords:30 }}</div>
         </div>
         <div class="book-card-actions">
