@@ -79,6 +79,7 @@ class LibroAdmin(admin.ModelAdmin):
 
     def cards_view(self, request):
         context = {
+            **self.admin_site.each_context(request),
             'libros': self.get_queryset(request),
             'title': 'Vista de Tarjetas - Libros',
             'opts': self.model._meta,
@@ -325,6 +326,7 @@ class LibrosDelMesAdmin(admin.ModelAdmin):
 
     def cards_view(self, request):
         context = {
+            **self.admin_site.each_context(request),
             'libros': self.get_queryset(request),
             'title': 'Vista de Tarjetas - Libros',
             'opts': self.model._meta,
