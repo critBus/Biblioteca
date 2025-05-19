@@ -279,8 +279,11 @@ class LibrosDelMesAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.calcular_libro_mes_view),
                 name='calcular-libro-mes',
             ),
+            path('cards/', self.admin_site.admin_view(self.cards_view), name='libro-cards-mes'),
         ]
         return custom_urls + urls
+    
+    
 
     def calcular_libro_mes_view(self, request):
         if request.method == 'POST':
@@ -302,6 +305,9 @@ class LibrosDelMesAdmin(admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}
         extra_context['show_calcular_button'] = True
+        if request.GET.get('view') == 'cards':
+            extra_context['show_cards'] = True
+            extra_context['libros'] = self.get_queryset(request)
         return super().changelist_view(request, extra_context)
 
     def has_add_permission(self, request):
@@ -309,6 +315,21 @@ class LibrosDelMesAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+
+    def get_list_display(self, request):
+        if request.GET.get('view') == 'cards':
+            return None
+        return super().get_list_display(request)
+    
+    
+
+    def cards_view(self, request):
+        context = {
+            'libros': self.get_queryset(request),
+            'title': 'Vista de Tarjetas - Libros',
+            'opts': self.model._meta,
+        }
+        return render(request, 'admin/biblioteca/librosdelmes/cards.html', context)
 
     class Media:
         css = {

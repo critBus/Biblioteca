@@ -1,0 +1,124 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .book-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+    .book-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+    .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .book-card-image {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        background-color: #f5f5f5;
+    }
+    .book-card-content {
+        padding: 15px;
+    }
+    .book-card-title {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    .book-card-author {
+        color: #666;
+        margin-bottom: 10px;
+    }
+    .book-card-description {
+        color: #777;
+        font-size: 0.9em;
+        line-height: 1.4;
+        margin-bottom: 15px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .book-card-actions {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 15px;
+        background: #f8f9fa;
+        border-top: 1px solid #eee;
+    }
+    .book-card-actions a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    .book-card-actions a:hover {
+        text-decoration: underline;
+    }
+    .view-toggle {
+        margin: 20px;
+        text-align: right;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+    .view-toggle a {
+        padding: 8px 15px;
+        background: #417690;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+    .view-toggle a:hover {
+        background: #295570;
+    }
+    .add-button {
+        background: #28a745 !important;
+    }
+    .add-button:hover {
+        background: #218838 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="view-toggle">
+    <!-- <a href="{% url 'admin:biblioteca_librosdelmes_add' %}" style="color:white;" class="add-button">
+        <i class="fas fa-plus"></i> Agregar Libro
+    </a> -->
+    <a href="/admin/biblioteca/librosdelmes/" style="color:white;">Ver como tabla</a>
+</div>
+
+<div class="book-cards">
+    {% for libro in libros %}
+    <div class="book-card">
+        {% if libro.libro.portada %}
+            <img src="{{ libro.libro.portada.url }}" alt="{{ libro.libro.titulo }}" class="book-card-image">
+        {% else %}
+            <div class="book-card-image" style="display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-book fa-4x" style="color: #ccc;"></i>
+            </div>
+        {% endif %}
+        <div class="book-card-content">
+            <div class="book-card-title">{{ libro.libro.titulo }}</div>
+            <div class="book-card-author">{{ libro.libro.autor }}</div>
+            <div class="book-card-description">{{ libro.libro.descripcion|truncatewords:30 }}</div>
+        </div>
+        <div class="book-card-actions">
+            <a href="{% url 'admin:biblioteca_librosdelmes_change' libro.id %}">Editar</a>
+            <a href="{% url 'admin:biblioteca_librosdelmes_delete' libro.id %}">Eliminar</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 
