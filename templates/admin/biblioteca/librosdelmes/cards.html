@@ -112,6 +112,12 @@
     <!-- <a href="{% url 'admin:biblioteca_librosdelmes_add' %}" style="color:white;" class="add-button">
         <i class="fas fa-plus"></i> Agregar Libro
     </a> -->
+    <form action="{% url 'admin:calcular-libro-mes' %}" method="POST" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-high btn-success" style="margin-right: 5px;">
+            Calcular Libro del Mes
+        </button>
+    </form>
     <a href="/admin/biblioteca/librosdelmes/" style="color:white;">Ver como tabla</a>
 </div>
 

@@ -4,6 +4,14 @@
 {% block extrastyle %}
 {{ block.super }}
 <style>
+    .page-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #417690;
+    }
     .book-cards {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -92,6 +100,8 @@
 {% endblock %}
 
 {% block content %}
+<h1 class="page-title">Libros</h1>
+
 <div class="view-toggle">
     <a href="{% url 'admin:biblioteca_libro_add' %}" style="color:white;" class="add-button">
         <i class="fas fa-plus"></i> Agregar Libro
