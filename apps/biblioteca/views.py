@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import *
 from django.http import HttpResponse
 from django.views.generic import DetailView, TemplateView
-
+from django.contrib import admin
 User=get_user_model()
 
 def register(request):
@@ -288,6 +288,7 @@ class ComentarioLibroForm(forms.ModelForm):
 def tabla_comentarios(request):
     comentarios = ComentarioLibro.objects.all().order_by('-fecha')
     datos = {
+        **admin.site.each_context(request),
         "comentarios": [{
             "libro": comentario.libro.titulo,
             "suscriptor": comentario.suscriptor.nombre,
@@ -332,6 +333,7 @@ def agregar_comentario(request, libro_id):
             form = ComentarioLibroForm()
     
     return render(request, "biblioteca/agregar_comentario.html", {
+        **admin.site.each_context(request),
         'form': form,
         'libro': libro,
         'suscriptor': suscriptor
@@ -405,7 +407,9 @@ def asistente_paso1(request):
             request.session['filtro_pais'] = pais
             return redirect('asistente_paso2')
     
+
     return render(request, 'biblioteca/asistente/paso1.html', {
+        **admin.site.each_context(request),
         'paises': paises
     })
 
@@ -426,6 +430,7 @@ def asistente_paso2(request):
             return redirect('asistente_paso3')
     
     return render(request, 'biblioteca/asistente/paso2.html', {
+        **admin.site.each_context(request),
         'generos': generos,
         'pais_seleccionado': pais
     })
@@ -451,6 +456,7 @@ def asistente_paso3(request):
             return redirect('asistente_paso4')
     
     return render(request, 'biblioteca/asistente/paso3.html', {
+        **admin.site.each_context(request),
         'editoriales': editoriales,
         'pais_seleccionado': pais,
         'genero_seleccionado': genero
@@ -479,6 +485,7 @@ def asistente_paso4(request):
             return redirect('asistente_paso5')
     
     return render(request, 'biblioteca/asistente/paso4.html', {
+        **admin.site.each_context(request),
         'materias': materias,
         'pais_seleccionado': pais,
         'genero_seleccionado': genero,
@@ -519,6 +526,7 @@ def asistente_paso5(request):
 
 
     return render(request, 'biblioteca/asistente/paso5.html', {
+        **admin.site.each_context(request),
         'pais_seleccionado': pais,
         'genero_seleccionado': genero,
         'editorial_seleccionada': editorial,
@@ -568,6 +576,7 @@ def resultados_recomendaciones(request):
             del request.session[key]
     
     return render(request, 'biblioteca/asistente/resultados.html', {
+        **admin.site.each_context(request),
         'libros': libros_recomendados,
         'filtros': filtros,
         "rankings":rankings

@@ -85,6 +85,23 @@ class LibroAdmin(admin.ModelAdmin):
             'opts': self.model._meta,
         }
         return render(request, 'admin/biblioteca/libro/cards.html', context)
+    
+    # def asistente_paso1_view(self,request):
+    #     """Primera pregunta: País de origen"""
+    #     # Obtener países únicos que tienen libros
+    #     paises = Libro.objects.values_list('pais', flat=True).distinct().exclude(pais='')
+        
+    #     if request.method == 'POST':
+    #         pais = request.POST.get('pais')
+    #         if pais:
+    #             # Guardar selección en sesión
+    #             request.session['filtro_pais'] = pais
+    #             return redirect('asistente_paso2')
+        
+    #     return render(request, 'biblioteca/asistente/paso1.html', {
+    #         **self.admin_site.each_context(request),
+    #         'paises': paises
+    #     })
 
 @admin.register(Revista)
 class RevistaAdmin(admin.ModelAdmin):
